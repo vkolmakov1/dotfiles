@@ -25,7 +25,7 @@ export GOPATH=~/Documents/Code/goworkspace
 
 # aliases
 alias e="emacsclient -t"
-alias killemacs="emacsclient -e \"(kill-emacs)\""
+alias kill-emacs="emacsclient -e \"(kill-emacs)\""
 
 alias zshcfg="e ~/.zshrc"
 alias emacscfg="e ~/.emacs"
