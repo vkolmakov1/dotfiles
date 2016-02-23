@@ -14,7 +14,6 @@
 (require 'diminish)
 
 ;;;; standard-settings
-
 (delete-selection-mode 1)
 (menu-bar-mode 0)
 (show-paren-mode 1)
@@ -25,16 +24,26 @@
 (toggle-truncate-lines 0)
 (setq inhibit-startup-message nil)
 (setq inhibit-startup-message t)
+;; fix scrolling
+(setq-default redisplay-dont-pause t
+              scroll-margin 1
+              scroll-step 1
+              scroll-conservatively 10000
+              scroll-preserve-screen-position 1
+              scroll-up-aggressively 0.01
+              scroll-down-aggressively 0.01)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (diminish 'subword-mode)
 
 ;;;; core
-
 (use-package swiper
   :ensure t
   :bind ("C-s" . swiper))
+
+(use-package flx
+  :ensure t)
 
 (use-package ivy
   :init (progn
@@ -55,23 +64,20 @@
          ("C-h f" . counsel-describe-function)
          ))
 
-(use-package flx
-  :ensure t)
-
 ;;;; org-mode
 (use-package org
   :mode (("\\.org$" . org-mode))
   :init (global-set-key (kbd "C-c a") 'org-agenda)
   :config (progn
+            (org-indent-mode 1)
             (setq org-src-fontify-natively t)
             (setq org-agenda-files (list "~/org/work.org"
                                          "~/org/school.org"
-                                         "~/org/home.org"))
+                                         "~/org/personal.org"))
             ))
 
 
 ;;;; company-c-python
-
 (use-package company
   :ensure t
   :defer t
@@ -92,15 +98,21 @@
   :defer t
   :init (add-to-list 'company-backends 'company-jedi))
 
+
 ;;;; general-utils
+(use-package magit
+  :ensure t
+  :defer t
+  :bind ("<f12>" . magit-status))
+
+(use-package ibuffer
+  :ensure t
+  :bind ("C-x C-b" . ibuffer))
 
 (use-package dired+
   :ensure t
   :defer t
   :init (diredp-toggle-find-file-reuse-dir 1))
-
-(use-package smooth-scrolling
-  :ensure t)
 
 (use-package undo-tree
   :ensure t
@@ -119,13 +131,6 @@
   :defer t
   :bind (("M-=" . er/expand-region)
          ("M--" . er/contract-region)))
-
-;; (use-package multiple-cursors
-;;   :ensure t
-;;   :defer t
-;;   :bind (("C-]" . mc/mark-next-like-this)
-;;          ("C-<" . mc/mark-previous-like-this)))
-;; Find better binds for it
 
 (use-package ace-jump-mode
   :ensure t
@@ -150,7 +155,6 @@
   :bind ("C-x o" . ace-window))
 
 ;;; web-stuff
-
 (use-package web-mode
   :ensure t
   :defer t
@@ -172,9 +176,7 @@
 (use-package js2-mode
   :ensure t
   :defer t
-
   :init (progn
-          (add-hook 'js-mode-hook 'js2-mode)
           (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))))
 
 ;;;; lisp
@@ -211,4 +213,3 @@
 (use-package golden-ratio
   :ensure t
   :bind ("M-o" . golden-ratio))
-(put 'upcase-region 'disabled nil)
