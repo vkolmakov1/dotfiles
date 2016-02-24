@@ -1,3 +1,5 @@
+;; my dotemacs
+
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -97,7 +99,6 @@
   :ensure t
   :defer t
   :init (add-to-list 'company-backends 'company-jedi))
-
 
 ;;;; general-utils
 (use-package magit
@@ -201,7 +202,7 @@
   :ensure t
   :init (progn
           (setq sml/no-confirm-load-theme t)
-          (setq sml/theme 'respectful)
+          (setq sml/theme 'dark)
           (setq sml/shorten-modes t)
           (setq sml/shorten-directory t)
           (sml/setup)))
