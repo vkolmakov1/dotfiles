@@ -1,5 +1,3 @@
-;; my dotemacs
-
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -63,8 +61,7 @@
          ("M-y" . counsel-yank-pop)
          ("C-c g" . counsel-git-grep)
          ("C-h b" . counsel-descbinds)
-         ("C-h f" . counsel-describe-function)
-         ))
+         ("C-h f" . counsel-describe-function)))
 
 ;;;; org-mode
 (use-package org
@@ -198,18 +195,21 @@
           (setq inferior-lisp-program "sbcl")))
 
 ;;;; looks
-(use-package smart-mode-line
-  :ensure t
-  :init (progn
-          (setq sml/no-confirm-load-theme t)
-          (setq sml/theme 'dark)
-          (setq sml/shorten-modes t)
-          (setq sml/shorten-directory t)
-          (sml/setup)))
+(defmacro my/set-theme (tname)
+  "Install and set theme using use-package"
+  (let* ((theme-name tname)
+         (package-name (funcall (lambda ()
+                                  (intern
+                                   (concatenate
+                                    'string
+                                    (apply #'symbol-name (cdr theme-name))
+                                    "-"
+                                    (symbol-name 'theme)))))))
+    `(use-package ,package-name
+       :ensure t
+       :init (load-theme ,theme-name t))))
 
-(use-package tangotango-theme
-  :ensure t
-  :init (load-theme 'tangotango t))
+(my/set-theme 'lush)
 
 (use-package golden-ratio
   :ensure t
