@@ -211,6 +211,33 @@
 
 (my/set-theme 'lush)
 
+(defun my/shorten-dir (dir-str)
+  (let ((dirs (reverse (split-string dir-str "/"))))
+    (cond ((and (equal (car dirs) "")
+                (equal (cadr dirs) ""))
+           "/")
+          ((and (equal (car dirs) "")
+                (or (equal (cadr dirs) user-login-name)
+                    (equal (cadr dirs) "~")))
+           "~")
+          (t (cadr dirs)))))
+
+(setq mode-line-format
+      (setq default-mode-line-format
+            (list '("-"
+                    (:eval (if (buffer-modified-p) "M" "-"))
+                    (:eval (if buffer-read-only    "R" "-"))
+                    " "
+                    mode-line-buffer-identification
+                    mode-line-position
+                    "\tat:"
+                    (:eval (my/shorten-dir default-directory))
+                    " "
+                    vc-mode
+                    "\t"
+                    mode-line-modes
+                    ))))
+
 (use-package golden-ratio
   :ensure t
   :bind ("M-o" . golden-ratio))
