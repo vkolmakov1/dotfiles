@@ -24,6 +24,8 @@ export GOROOT=/usr/local/go
 export GOPATH=~/Documents/Code/goworkspace
 
 # aliases
+alias ls="/usr/local/bin/gls --color -h --group-directories-first"
+
 alias e="emacsclient -t"
 alias kill-emacs="emacsclient -e \"(kill-emacs)\""
 
