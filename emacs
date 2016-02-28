@@ -45,6 +45,9 @@
 (use-package flx
   :ensure t)
 
+(use-package smex
+  :ensure t)
+
 (use-package ivy
   :init (progn
           (ivy-mode)
@@ -70,11 +73,9 @@
   :config (progn
             (org-indent-mode 1)
             (setq org-src-fontify-natively t)
-            (setq org-agenda-files (list "~/org/work.org"
-                                         "~/org/school.org"
-                                         "~/org/personal.org"))
-            ))
-
+            (setq org-agenda-files (list "~/org/agenda/work.org"
+                                         "~/org/agenda/school.org"
+                                         "~/org/agenda/personal.org"))))
 
 ;;;; company-c-python
 (use-package company
@@ -86,11 +87,6 @@
           (define-key company-active-map (kbd "C-n") 'company-select-next)
           (define-key company-active-map (kbd "C-p") 'company-select-previous)
           (setq company-minimum-prefix-length 2)))
-
-(use-package company-c-headers
-  :ensure t
-  :defer t
-  :init (add-to-list 'company-backends 'company-c-headers))
 
 (use-package company-jedi
   :ensure t
@@ -110,13 +106,19 @@
 (use-package dired+
   :ensure t
   :defer t
-  :init (diredp-toggle-find-file-reuse-dir 1))
+  :init (progn (if (executable-find "gls")
+                   (progn
+                     (setq insert-directory-program "gls")
+                     (setq dired-listing-switches "-lFaGh1v --group-directories-first")))
+               (diredp-toggle-find-file-reuse-dir 1)
+               (add-to-list 'dired-omit-extensions ".DS_Store")
+               (customize-set-variable 'diredp-hide-details-initially-flag nil)))
 
 (use-package undo-tree
   :ensure t
   :defer t
   :diminish undo-tree-mode
-  :init (global-undo-tree-mode)
+  :config (global-undo-tree-mode)
   :bind ("M-/" . undo-tree-visualize))
 
 (use-package comment-dwim-2
@@ -152,6 +154,11 @@
   :defer t
   :bind ("C-x o" . ace-window))
 
+(use-package simpleclip
+  :ensure t
+  :bind (("C-x C-w" . simpleclip-copy)
+         ("C-x C-y" . simpleclip-paste)))
+
 ;;; web-stuff
 (use-package web-mode
   :ensure t
@@ -178,10 +185,8 @@
           (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))))
 
 ;;;; lisp
-(add-hook 'lisp-mode-hook (lambda ()
-                            (setq-local show-paren-style 'expression)))
-(add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq-local show-paren-style 'expression)))
+(use-package paredit
+  :ensure t)
 
 (use-package slime
   :ensure t
@@ -192,24 +197,37 @@
                       (define-key slime-repl-mode-map (kbd "DEL") nil)))
           (load (expand-file-name "~/quicklisp/slime-helper.el"))
           (slime-setup '(slime-fancy))
-          (setq inferior-lisp-program "sbcl")))
+          (setq inferior-lisp-program "sbcl")
+	  (setq slime-protocol-version 'ignore)))
+
+(add-hook 'lisp-mode-hook (lambda ()
+                            (setq-local show-paren-style 'expression)
+                            (paredit-mode 1)
+                            (eldoc-mode 1)
+			    (setq eldoc-idle-delay 0.3)
+			    (diminish 'eldoc-mode)))
+
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+                                  (setq-local show-paren-style 'expression)
+                                  (diminish 'eldoc-mode)
+                                  (paredit-mode 1)
+                                  (setq eldoc-idle-delay 0.3)
+                                  (eldoc-mode 1)))
 
 ;;;; looks
 (defmacro my/set-theme (tname)
-  "Install and set theme using use-package"
-  (let* ((theme-name tname)
-         (package-name (funcall (lambda ()
-                                  (intern
-                                   (concatenate
-                                    'string
-                                    (apply #'symbol-name (cdr theme-name))
-                                    "-"
-                                    (symbol-name 'theme)))))))
-    `(use-package ,package-name
-       :ensure t
-       :init (load-theme ,theme-name t))))
+ "Install and set theme using use-package"
+ (let ((theme-name tname)
+       (package-name (funcall (lambda ()
+                                (intern (concat
+                                         (symbol-name tname)
+                                         "-"
+                                         (symbol-name 'theme)))))))
+   `(use-package ,package-name
+      :ensure t
+      :config (load-theme ',theme-name t))))
 
-(my/set-theme 'lush)
+(my/set-theme lush)
 
 (defun my/shorten-dir (dir-str)
   (let ((dirs (reverse (split-string dir-str "/"))))
