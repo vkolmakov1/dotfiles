@@ -97,7 +97,8 @@
 (use-package magit
   :ensure t
   :defer t
-  :bind ("<f12>" . magit-status))
+  :bind (("<f11>" . magit-log-all)
+         ("<f12>" . magit-status)))
 
 (use-package ibuffer
   :ensure t
