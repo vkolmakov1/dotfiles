@@ -185,6 +185,10 @@
   :init (progn
           (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))))
 
+(use-package json-mode
+  :ensure t
+  :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
+
 ;;;; lisp
 (use-package paredit
   :ensure t)
@@ -202,14 +206,12 @@
 	  (setq slime-protocol-version 'ignore)))
 
 (add-hook 'lisp-mode-hook (lambda ()
-                            (setq-local show-paren-style 'expression)
                             (paredit-mode 1)
                             (eldoc-mode 1)
 			    (setq eldoc-idle-delay 0.3)
 			    (diminish 'eldoc-mode)))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
-                                  (setq-local show-paren-style 'expression)
                                   (diminish 'eldoc-mode)
                                   (paredit-mode 1)
                                   (setq eldoc-idle-delay 0.3)
