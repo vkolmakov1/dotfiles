@@ -203,13 +203,12 @@
           (load (expand-file-name "~/quicklisp/slime-helper.el"))
           (slime-setup '(slime-fancy))
           (setq inferior-lisp-program "sbcl")
-	  (setq slime-protocol-version 'ignore)))
-
-(add-hook 'lisp-mode-hook (lambda ()
+	  (setq slime-protocol-version 'ignore)
+          (add-hook 'lisp-mode-hook (lambda ()
                             (paredit-mode 1)
                             (eldoc-mode 1)
 			    (setq eldoc-idle-delay 0.3)
-			    (diminish 'eldoc-mode)))
+			    (diminish 'eldoc-mode)))))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (diminish 'eldoc-mode)
@@ -250,14 +249,14 @@
                     (:eval (if buffer-read-only    "R" "-"))
                     " "
                     mode-line-buffer-identification
+                    " "
                     mode-line-position
                     "\tat:"
                     (:eval (my/shorten-dir default-directory))
                     " "
                     vc-mode
-                    "\t"
-                    mode-line-modes
-                    ))))
+                    " "
+                    mode-line-modes))))
 
 (use-package golden-ratio
   :ensure t
