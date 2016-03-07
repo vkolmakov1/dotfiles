@@ -133,10 +133,9 @@
   :bind (("M-=" . er/expand-region)
          ("M--" . er/contract-region)))
 
-(use-package ace-jump-mode
+(use-package avy
   :ensure t
-  :defer t
-  :bind ("C-c SPC" . ace-jump-char-mode))
+  :bind ("C-c SPC" . avy-goto-char))
 
 (use-package visual-regexp-steroids
   :ensure t
