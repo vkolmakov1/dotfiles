@@ -159,6 +159,12 @@
   :bind (("C-x C-w" . simpleclip-copy)
          ("C-x C-y" . simpleclip-paste)))
 
+(use-package multiple-cursors
+  :ensure t
+  :defer t
+  :bind (("M-n" . mc/mark-next-like-this)
+         ("M-m" . mc/mark-previous-like-this)))
+
 ;;; web-stuff
 (use-package web-mode
   :ensure t
