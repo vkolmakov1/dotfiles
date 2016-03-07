@@ -17,8 +17,10 @@
 (delete-selection-mode 1)
 (menu-bar-mode 0)
 (show-paren-mode 1)
+(global-hl-line-mode)
 (global-subword-mode 1) ; Iterate over camelCasedWords
 (electric-pair-mode)
+(setq vc-follow-symlinks t) ; follow symlinks without asking
 
 (setq backup-directory-alist `(("." . "~/emacs-backups")))
 (toggle-truncate-lines 0)
@@ -37,6 +39,12 @@
 
 (diminish 'subword-mode)
 
+;; ask before closing emacs
+(global-set-key (kbd "C-x C-c")
+                (lambda () (interactive)
+                  (cond ((y-or-n-p "Quit? ")
+                         (save-buffers-kill-emacs)))))
+
 ;;;; core
 (use-package swiper
   :ensure t
@@ -54,15 +62,16 @@
           (setq ivy-display-style 'fancy)
           (setq ivy-re-builders-alist
                 '((t . ivy--regex-fuzzy)))
-          (setq ivy-initial-inputs-alist nil)
-          )
+          (setq ivy-initial-inputs-alist nil))
+  :bind (:map ivy-minibuffer-map
+              ("C-j" . ivy-immediate-done))
   :diminish ivy-mode)
 
 (use-package counsel
   :ensure t
   :bind (("M-x" . counsel-M-x)
          ("M-y" . counsel-yank-pop)
-         ("C-c g" . counsel-git-grep)
+         ("C-c g" . counsel-ag)
          ("C-h b" . counsel-descbinds)
          ("C-h f" . counsel-describe-function)))
 
@@ -135,7 +144,7 @@
 
 (use-package avy
   :ensure t
-  :bind ("C-c SPC" . avy-goto-char))
+  :bind ("C-c c" . avy-goto-char))
 
 (use-package visual-regexp-steroids
   :ensure t
