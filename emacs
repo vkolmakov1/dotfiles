@@ -43,7 +43,7 @@
 (global-set-key (kbd "C-x C-c")
                 (lambda () (interactive)
                   (cond ((y-or-n-p "Quit? ")
-                         (save-buffers-kill-emacs)))))
+                         (save-buffers-kill-terminal)))))
 
 ;;;; core
 (use-package swiper
@@ -71,9 +71,10 @@
   :ensure t
   :bind (("M-x" . counsel-M-x)
          ("M-y" . counsel-yank-pop)
-         ("C-c g" . counsel-ag)
+         ("C-c g" . counsel-git-grep)
          ("C-h b" . counsel-descbinds)
-         ("C-h f" . counsel-describe-function)))
+         ("C-h f" . counsel-describe-function)
+         ("C-c k" . counsel-ag)))
 
 ;;;; org-mode
 (use-package org
@@ -95,7 +96,9 @@
           (global-company-mode)
           (define-key company-active-map (kbd "C-n") 'company-select-next)
           (define-key company-active-map (kbd "C-p") 'company-select-previous)
-          (setq company-minimum-prefix-length 2)))
+          (setq company-minimum-prefix-length 2)
+          (add-to-list 'company-backends 'company-css t)
+          (add-to-list 'company-backends 'company-files t)))
 
 (use-package company-jedi
   :ensure t
@@ -197,7 +200,24 @@
   :ensure t
   :defer t
   :init (progn
-          (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))))
+          (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+          (setq js2-global-externs '("module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
+          (setq js2-idle-timer-delay 0.1)
+
+))
+
+(use-package tern
+  :ensure t
+  :init (progn
+          (add-hook 'js-mode-hook (lambda () (tern-mode t)))))
+
+(use-package company-tern
+  :ensure t
+  :init (progn
+          (add-to-list 'company-backends 'company-tern)))
+
+(use-package nodejs-repl
+  :ensure t)
 
 (use-package json-mode
   :ensure t
