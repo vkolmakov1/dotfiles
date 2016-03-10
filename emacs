@@ -38,12 +38,20 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (diminish 'subword-mode)
+(diminish 'auto-revert-mode)
 
 ;; ask before closing emacs
 (global-set-key (kbd "C-x C-c")
                 (lambda () (interactive)
-                  (cond ((y-or-n-p "Quit? ")
+                  (cond ((y-or-n-p "Close this session?")
                          (save-buffers-kill-terminal)))))
+
+;; create a command to clear kill-ring
+
+(defun my/clear-kill-ring ()
+  "Clears out kill-ring contents"
+  (interactive)
+  (progn (setq kill-ring nil) (garbage-collect)))
 
 ;;;; core
 (use-package swiper
@@ -87,7 +95,7 @@
                                          "~/org/agenda/school.org"
                                          "~/org/agenda/personal.org"))))
 
-;;;; company-c-python
+;;;; general-utils
 (use-package company
   :ensure t
   :defer t
@@ -100,12 +108,6 @@
           (add-to-list 'company-backends 'company-css t)
           (add-to-list 'company-backends 'company-files t)))
 
-(use-package company-jedi
-  :ensure t
-  :defer t
-  :init (add-to-list 'company-backends 'company-jedi))
-
-;;;; general-utils
 (use-package magit
   :ensure t
   :defer t
@@ -147,7 +149,7 @@
 
 (use-package avy
   :ensure t
-  :bind ("C-c c" . avy-goto-char))
+  :bind ("M-a" . avy-goto-char))
 
 (use-package visual-regexp-steroids
   :ensure t
@@ -177,6 +179,12 @@
   :bind (("M-n" . mc/mark-next-like-this)
          ("M-m" . mc/mark-previous-like-this)))
 
+;;;; python
+(use-package elpy
+  :ensure t
+  :init (add-hook 'python-mode-hook (lambda ()
+                                      (elpy-mode))))
+
 ;;; web-stuff
 (use-package web-mode
   :ensure t
@@ -196,15 +204,18 @@
   :defer t
   :init (add-hook 'web-mode-hook 'emmet-mode))
 
+(use-package json-mode
+  :ensure t
+  :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
+
+;;;; javascript
 (use-package js2-mode
   :ensure t
   :defer t
   :init (progn
           (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
           (setq js2-global-externs '("module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
-          (setq js2-idle-timer-delay 0.1)
-
-))
+          (setq js2-idle-timer-delay 0.1)))
 
 (use-package tern
   :ensure t
@@ -218,10 +229,6 @@
 
 (use-package nodejs-repl
   :ensure t)
-
-(use-package json-mode
-  :ensure t
-  :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
 
 ;;;; lisp
 (use-package paredit
@@ -239,10 +246,10 @@
           (setq inferior-lisp-program "sbcl")
 	  (setq slime-protocol-version 'ignore)
           (add-hook 'lisp-mode-hook (lambda ()
-                            (paredit-mode 1)
-                            (eldoc-mode 1)
-			    (setq eldoc-idle-delay 0.3)
-			    (diminish 'eldoc-mode)))))
+                                      (paredit-mode 1)
+                                      (eldoc-mode 1)
+                                      (setq eldoc-idle-delay 0.3)
+                                      (diminish 'eldoc-mode)))))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (diminish 'eldoc-mode)
@@ -251,21 +258,22 @@
                                   (eldoc-mode 1)))
 
 ;;;; looks
-(defmacro my/set-theme (tname)
- "Install and set theme using use-package"
- (let ((theme-name tname)
-       (package-name (funcall (lambda ()
-                                (intern (concat
-                                         (symbol-name tname)
-                                         "-"
-                                         (symbol-name 'theme)))))))
-   `(use-package ,package-name
-      :ensure t
-      :config (load-theme ',theme-name t))))
+(defmacro my/set-theme (tname &optional extas)
+  "Install and set theme using use-package"
+  (let ((theme-name tname)
+        (package-name (funcall (lambda ()
+                                 (intern (concat
+                                          (symbol-name tname)
+                                          "-"
+                                          (symbol-name 'theme)))))))
+    `(use-package ,package-name
+       :ensure t
+       :config (load-theme ',theme-name t))))
 
-(my/set-theme lush)
+(my/set-theme material)
 
 (defun my/shorten-dir (dir-str)
+  "Given a directory keep the only the last two items"
   (let ((dirs (reverse (split-string dir-str "/"))))
     (cond ((and (equal (car dirs) "")
                 (equal (cadr dirs) ""))
