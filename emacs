@@ -233,26 +233,30 @@
 (use-package paredit
   :ensure t)
 
+(use-package rainbow-delimiters
+  :ensure t)
+
 (use-package slime
   :ensure t
   :defer t
   :init (progn
-          (add-hook 'slime-repl-mode-hook
-                    (lambda ()
-                      (define-key slime-repl-mode-map (kbd "DEL") nil)
-                      (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
-                      (paredit-mode 1)
-                      (eldoc-mode 1)
-                      (setq eldoc-idle-delay 0.3)))
           (load (expand-file-name "~/quicklisp/slime-helper.el"))
           (slime-setup '(slime-fancy slime-company))
           (setq inferior-lisp-program "sbcl")
 	  (setq slime-protocol-version 'ignore)
-          (add-hook 'lisp-mode-hook (lambda ()
-                                      (paredit-mode 1)
-                                      (eldoc-mode 1)
-                                      (setq eldoc-idle-delay 0.3)
-                                      (diminish 'eldoc-mode)))))
+
+          (define-key slime-repl-mode-map (kbd "DEL") nil)
+          (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
+
+          (defun my/lisp-hook ()
+            (rainbow-delimiters-mode 1)
+            (paredit-mode 1)
+            (eldoc-mode 1)
+            (setq eldoc-idle-delay 0.3)
+            (diminish 'eldoc-mode))
+
+          (add-hook 'slime-repl-mode-hook 'my/lisp-hook)
+          (add-hook 'lisp-mode-hook 'my/lisp-hook)))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (diminish 'eldoc-mode)
@@ -277,7 +281,7 @@
        :config (load-theme ',theme-name t))))
 
 (my/set-theme material)
-(load-theme 'material-light t)
+;; (load-theme 'material-light t)
 
 (defun my/shorten-dir (dir-str)
   "Given a directory keep the only the last two items"
