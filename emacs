@@ -47,7 +47,6 @@
                          (save-buffers-kill-terminal)))))
 
 ;; create a command to clear kill-ring
-
 (defun my/clear-kill-ring ()
   "Clears out kill-ring contents"
   (interactive)
@@ -240,9 +239,13 @@
   :init (progn
           (add-hook 'slime-repl-mode-hook
                     (lambda ()
-                      (define-key slime-repl-mode-map (kbd "DEL") nil)))
+                      (define-key slime-repl-mode-map (kbd "DEL") nil)
+                      (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
+                      (paredit-mode 1)
+                      (eldoc-mode 1)
+                      (setq eldoc-idle-delay 0.3)))
           (load (expand-file-name "~/quicklisp/slime-helper.el"))
-          (slime-setup '(slime-fancy))
+          (slime-setup '(slime-fancy slime-company))
           (setq inferior-lisp-program "sbcl")
 	  (setq slime-protocol-version 'ignore)
           (add-hook 'lisp-mode-hook (lambda ()
@@ -257,8 +260,11 @@
                                   (setq eldoc-idle-delay 0.3)
                                   (eldoc-mode 1)))
 
+(use-package slime-company
+  :ensure t)
+
 ;;;; looks
-(defmacro my/set-theme (tname &optional extas)
+(defmacro my/set-theme (tname)
   "Install and set theme using use-package"
   (let ((theme-name tname)
         (package-name (funcall (lambda ()
@@ -271,6 +277,7 @@
        :config (load-theme ',theme-name t))))
 
 (my/set-theme material)
+(load-theme 'material-light t)
 
 (defun my/shorten-dir (dir-str)
   "Given a directory keep the only the last two items"
