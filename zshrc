@@ -10,7 +10,7 @@ ZSH_THEME="minimal"
 COMPLETION_WAITING_DOTS="true"
 
 # plugins
-plugins=(git)
+plugins=(git npm node meteor)
 
 source $ZSH/oh-my-zsh.sh
 
