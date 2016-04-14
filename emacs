@@ -17,7 +17,6 @@
 (delete-selection-mode 1)
 (menu-bar-mode 0)
 (show-paren-mode 1)
-(global-hl-line-mode)
 (global-subword-mode 1) ; Iterate over camelCasedWords
 (electric-pair-mode)
 (setq vc-follow-symlinks t) ; follow symlinks without asking
@@ -182,7 +181,9 @@
 (use-package elpy
   :ensure t
   :init (add-hook 'python-mode-hook (lambda ()
-                                      (elpy-mode))))
+                                      (setq-default elpy-modules
+                                                    (remove 'highlight-indentation-mode elpy-modules))
+                                      (elpy-enable))))
 
 ;;; web-stuff
 (use-package web-mode
@@ -229,6 +230,9 @@
 (use-package nodejs-repl
   :ensure t)
 
+(use-package restclient
+  :ensure t)
+
 ;;;; lisp
 (use-package paredit
   :ensure t)
@@ -244,7 +248,6 @@
           (slime-setup '(slime-fancy slime-company))
           (setq inferior-lisp-program "sbcl")
 	  (setq slime-protocol-version 'ignore)
-
           (define-key slime-repl-mode-map (kbd "DEL") nil)
           (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
 
