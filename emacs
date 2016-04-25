@@ -93,6 +93,8 @@
                                          "~/org/agenda/school.org"
                                          "~/org/agenda/personal.org"))))
 
+(use-package org-babel)
+
 ;;;; general-utils
 (use-package company
   :ensure t
@@ -147,7 +149,7 @@
 
 (use-package avy
   :ensure t
-  :bind ("M-a" . avy-goto-char))
+  :bind ("M-a" . avy-goto-word-1))
 
 (use-package visual-regexp-steroids
   :ensure t
@@ -171,11 +173,22 @@
   :bind (("C-x C-w" . simpleclip-copy)
          ("C-x C-y" . simpleclip-paste)))
 
+(use-package region-bindings-mode
+  :ensure t
+  :init (region-bindings-mode-enable)
+  :bind (:map region-bindings-mode-map
+              ("u" . upcase-region)
+              ("l" . downcase-region)))
+
 (use-package multiple-cursors
   :ensure t
   :defer t
-  :bind (("M-n" . mc/mark-next-like-this)
-         ("M-m" . mc/mark-previous-like-this)))
+  :bind (:map region-bindings-mode-map
+              ("a" . mc/mark-all-like-this)
+              ("n" . mc/mark-next-like-this)
+              ("p" . mc/mark-previous-like-this)
+              ("P" . mc/unmark-previous-like-this)
+              ("N" . mc/unmark-next-like-this)))
 
 ;;;; python
 (use-package elpy
@@ -233,9 +246,14 @@
 (use-package restclient
   :ensure t)
 
+(use-package scss-mode
+  :ensure t)
+
 ;;;; lisp
 (use-package paredit
-  :ensure t)
+  :ensure t
+  :bind (("M-[" . paredit-forward-barf-sexp)
+         ("M-]" . paredit-forward-slurp-sexp)))
 
 (use-package rainbow-delimiters
   :ensure t)
