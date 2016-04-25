@@ -252,8 +252,8 @@
 ;;;; lisp
 (use-package paredit
   :ensure t
-  :bind (("M-[" . paredit-forward-barf-sexp)
-         ("M-]" . paredit-forward-slurp-sexp)))
+  :bind (("M-{" . paredit-forward-barf-sexp)
+         ("M-}" . paredit-forward-slurp-sexp)))
 
 (use-package rainbow-delimiters
   :ensure t)
