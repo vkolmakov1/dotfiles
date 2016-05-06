@@ -17,6 +17,7 @@
 (delete-selection-mode 1)
 (menu-bar-mode 0)
 (show-paren-mode 1)
+(tool-bar-mode 0)
 (global-subword-mode 1) ; Iterate over camelCasedWords
 (electric-pair-mode)
 (setq vc-follow-symlinks t) ; follow symlinks without asking
@@ -92,8 +93,6 @@
             (setq org-agenda-files (list "~/org/agenda/work.org"
                                          "~/org/agenda/school.org"
                                          "~/org/agenda/personal.org"))))
-
-(use-package org-babel)
 
 ;;;; general-utils
 (use-package company
@@ -175,7 +174,9 @@
 
 (use-package region-bindings-mode
   :ensure t
-  :init (region-bindings-mode-enable)
+  :init (progn
+          (region-bindings-mode)
+          (region-bindings-mode-enable))
   :bind (:map region-bindings-mode-map
               ("u" . upcase-region)
               ("l" . downcase-region)))
@@ -189,6 +190,27 @@
               ("p" . mc/mark-previous-like-this)
               ("P" . mc/unmark-previous-like-this)
               ("N" . mc/unmark-next-like-this)))
+
+;; mostly for javascript
+;; first, do $ npm install -g eslint babel-eslint
+;; then configure ~/.eslintrc
+(use-package flycheck
+  :ensure t
+  :init (progn (global-flycheck-mode)
+               (setq-default flycheck-disabled-checkers
+                             (append flycheck-disabled-checkers
+                                     '(javascript-jshint)))
+               (flycheck-add-mode 'javascript-eslint 'web-mode)
+               (flycheck-add-mode 'javascript-eslint 'js-mode)
+               (setq-default flycheck-temp-prefix ".flycheck")
+               (setq flycheck-eslintrc "~/.eslintrc")))
+
+
+
+(use-package exec-path-from-shell
+  :ensure t
+  :init (when (memq window-system '(mac ns))
+          (exec-path-from-shell-initialize)))
 
 ;;;; python
 (use-package elpy
@@ -208,7 +230,7 @@
           (setq web-mode-enable-auto-pairing t)
           (setq web-mode-enable-current-element-highlight t)
           (setq-default indent-tabs-mode nil)
-          (setq web-mode-markup-indent-offset 4)
+          (setq web-mode-markup-indent-offset )
           (setq web-mode-css-indent-offset 4)
           (setq web-mode-code-indent-offset 4)))
 
@@ -222,18 +244,11 @@
   :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
 
 ;;;; javascript
-(use-package js2-mode
-  :ensure t
-  :defer t
-  :init (progn
-          (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-          (setq js2-global-externs '("module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON"))
-          (setq js2-idle-timer-delay 0.1)))
-
+;; do $ npm install -g tern
+;; configure ~/.tern-config
 (use-package tern
   :ensure t
-  :init (progn
-          (add-hook 'js-mode-hook (lambda () (tern-mode t)))))
+  :init (add-hook 'js-mode-hook (lambda () (tern-mode t))))
 
 (use-package company-tern
   :ensure t
@@ -301,8 +316,7 @@
        :ensure t
        :config (load-theme ',theme-name t))))
 
-(my/set-theme material)
-;; (load-theme 'material-light t)
+(my/set-theme ample)
 
 (defun my/shorten-dir (dir-str)
   "Given a directory keep the only the last two items"
