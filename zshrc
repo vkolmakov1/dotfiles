@@ -15,7 +15,7 @@ plugins=(git npm node meteor)
 source $ZSH/oh-my-zsh.sh
 
 # path
-export PATH="/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/usr/texbin:/usr/local/go/bin"
+export PATH="/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/Library/TeX/texbin:/usr/local/go/bin"
 export PATH="/Library/PostgreSQL/9.5/bin:$PATH"
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/Cellar/openssl/1.0.2d_1/lib
 
@@ -24,14 +24,34 @@ export GOROOT=/usr/local/go
 export GOPATH=~/Documents/Code/goworkspace
 
 # aliases
-alias ls="/usr/local/bin/gls --color -h --group-directories-first"
+## brew install gls
+alias ls="/usr/local/bin/gls --color -hX --group-directories-first"
+alias la="/usr/local/bin/gls --color -o -AhX --group-directories-first"
+## brew install trash
+alias rm="trash"
 
+# emacs
 alias e="emacsclient -t"
 alias kill-emacs="emacsclient -e \"(kill-emacs)\""
 
-alias zshcfg="e ~/.zshrc"
-alias emacscfg="e ~/.emacs"
-alias tmuxcfg="e ~/.tmux.conf"
+# configs
+alias zshrc="e ~/.zshrc"
+alias emacsconfig="e ~/.emacs"
+alias tmuxconf="e ~/.tmux.conf"
 
+# npm
+alias ni="npm install"
+alias nis="npm i -S "
+alias nid="npm i -D "
+alias nig="npm i -g "
+alias nrs="npm run start"
+alias nrb="npm run build"
+alias nrt="npm run test"
+
+# rest
 alias bower="noglob bower"
+## nig tldr
+alias h="tldr"
+
+# ssh
 alias fourier="ssh vkolmako@fourier.cs.iit.edu"
