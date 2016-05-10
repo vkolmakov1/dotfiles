@@ -126,7 +126,8 @@
                      (setq dired-listing-switches "-lFaGh1v --group-directories-first")))
                (diredp-toggle-find-file-reuse-dir 1)
                (add-to-list 'dired-omit-extensions ".DS_Store")
-               (customize-set-variable 'diredp-hide-details-initially-flag nil)))
+               (customize-set-variable 'diredp-hide-details-initially-flag nil)
+               (add-hook 'dired-mode-hook 'auto-revert-mode)))
 
 (use-package undo-tree
   :ensure t
@@ -192,6 +193,17 @@
               ("N" . mc/unmark-next-like-this)))
 
 ;; mostly for javascript
+;;;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (file-executable-p eslint)
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+
 ;; first, do $ npm install -g eslint babel-eslint
 ;; then configure ~/.eslintrc
 (use-package flycheck
@@ -203,9 +215,7 @@
                (flycheck-add-mode 'javascript-eslint 'web-mode)
                (flycheck-add-mode 'javascript-eslint 'js-mode)
                (setq-default flycheck-temp-prefix ".flycheck")
-               (setq flycheck-eslintrc "~/.eslintrc")))
-
-
+               (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)))
 
 (use-package exec-path-from-shell
   :ensure t
