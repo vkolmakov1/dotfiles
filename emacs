@@ -220,7 +220,14 @@
           (exec-path-from-shell-initialize)))
 
 ;;;; python
-
+;; sudo pip install elpy rope jedi
+(use-package elpy
+  :ensure t
+  :init (progn
+          (add-hook 'python-mode-hook 'elpy-mode)
+          (custom-set-variables' (elpy-modules
+                                  (quote
+                                   (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-yasnippet elpy-module-sane-defaults))))))
 
 ;;; web-stuff
 (use-package web-mode
