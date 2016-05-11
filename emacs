@@ -95,17 +95,14 @@
                                          "~/org/agenda/personal.org"))))
 
 ;;;; general-utils
-(use-package company
+(use-package auto-complete
   :ensure t
-  :defer t
-  :diminish company-mode
-  :init (progn
-          (global-company-mode)
-          (define-key company-active-map (kbd "C-n") 'company-select-next)
-          (define-key company-active-map (kbd "C-p") 'company-select-previous)
-          (setq company-minimum-prefix-length 2)
-          (add-to-list 'company-backends 'company-css t)
-          (add-to-list 'company-backends 'company-files t)))
+  :init  (progn (ac-config-default)
+                (setq ac-auto-start 3))
+  :bind (:map ac-complete-mode-map
+              ("C-n" . ac-next)
+              ("C-p" . ac-previous)
+              ))
 
 (use-package magit
   :ensure t
@@ -208,12 +205,12 @@
 ;; then configure ~/.eslintrc
 (use-package flycheck
   :ensure t
+  :diminish flycheck-mode
   :init (progn (global-flycheck-mode)
                (setq-default flycheck-disabled-checkers
                              (append flycheck-disabled-checkers
                                      '(javascript-jshint)))
                (flycheck-add-mode 'javascript-eslint 'web-mode)
-               (flycheck-add-mode 'javascript-eslint 'js-mode)
                (setq-default flycheck-temp-prefix ".flycheck")
                (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)))
 
@@ -223,12 +220,7 @@
           (exec-path-from-shell-initialize)))
 
 ;;;; python
-(use-package elpy
-  :ensure t
-  :init (add-hook 'python-mode-hook (lambda ()
-                                      (setq-default elpy-modules
-                                                    (remove 'highlight-indentation-mode elpy-modules))
-                                      (elpy-enable))))
+
 
 ;;; web-stuff
 (use-package web-mode
@@ -260,10 +252,21 @@
   :ensure t
   :init (add-hook 'js-mode-hook (lambda () (tern-mode t))))
 
-(use-package company-tern
+(use-package tern-auto-complete
   :ensure t
-  :init (progn
-          (add-to-list 'company-backends 'company-tern)))
+  :init (eval-after-load 'tern
+          '(progn
+             (tern-ac-setup))))
+
+(use-package js2-mode
+  :ensure t
+  :init (progn (add-hook 'js-mode-hook 'js2-minor-mode)
+               (custom-set-variables
+                '(js2-mode-show-parse-errors nil)
+                '(js2-mode-show-errors nil)
+                '(js2-mode-show-warnings nil)
+                '(js2-mode-show-strict-warnings nil)
+                '(js2-mode-show-warn-or-err nil))))
 
 (use-package nodejs-repl
   :ensure t)
@@ -288,7 +291,6 @@
   :defer t
   :init (progn
           (load (expand-file-name "~/quicklisp/slime-helper.el"))
-          (slime-setup '(slime-fancy slime-company))
           (setq inferior-lisp-program "sbcl")
 	  (setq slime-protocol-version 'ignore)
           (define-key slime-repl-mode-map (kbd "DEL") nil)
@@ -309,9 +311,6 @@
                                   (paredit-mode 1)
                                   (setq eldoc-idle-delay 0.3)
                                   (eldoc-mode 1)))
-
-(use-package slime-company
-  :ensure t)
 
 ;;;; looks
 (defmacro my/set-theme (tname)
