@@ -36,6 +36,7 @@
               scroll-down-aggressively 0.01)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'focus-out-hook 'garbage-collect)
 
 (diminish 'subword-mode)
 (diminish 'auto-revert-mode)
@@ -98,11 +99,10 @@
 (use-package auto-complete
   :ensure t
   :init  (progn (ac-config-default)
-                (setq ac-auto-start 3))
+                (setq ac-auto-start 2))
   :bind (:map ac-complete-mode-map
               ("C-n" . ac-next)
-              ("C-p" . ac-previous)
-              ))
+              ("C-p" . ac-previous)))
 
 (use-package magit
   :ensure t
@@ -151,7 +151,8 @@
 (use-package visual-regexp-steroids
   :ensure t
   :defer t
-  :bind ("C-c r" . vr/select-query-replace))
+  :bind (:map region-bindings-mode-map
+              ("r" . vr/select-query-replace)))
 
 (use-package projectile
   :ensure t
@@ -206,13 +207,16 @@
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
-  :init (progn (global-flycheck-mode)
-               (setq-default flycheck-disabled-checkers
+  :init
+  (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)
+  (add-hook 'js-mode-hook 'flycheck-mode)
+  :config
+  (setq-default flycheck-temp-prefix ".")
+  (setq-default flycheck-disabled-checkers
                              (append flycheck-disabled-checkers
-                                     '(javascript-jshint)))
-               (flycheck-add-mode 'javascript-eslint 'web-mode)
-               (setq-default flycheck-temp-prefix ".flycheck")
-               (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)))
+                                     '(javascript-jshint))))
+
+
 
 (use-package exec-path-from-shell
   :ensure t
@@ -225,9 +229,7 @@
   :ensure t
   :init (progn
           (add-hook 'python-mode-hook 'elpy-mode)
-          (custom-set-variables' (elpy-modules
-                                  (quote
-                                   (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-yasnippet elpy-module-sane-defaults))))))
+          ))
 
 ;;; web-stuff
 (use-package web-mode
@@ -253,27 +255,10 @@
   :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
 
 ;;;; javascript
-;; do $ npm install -g tern
-;; configure ~/.tern-config
-(use-package tern
-  :ensure t
-  :init (add-hook 'js-mode-hook (lambda () (tern-mode t))))
-
-(use-package tern-auto-complete
-  :ensure t
-  :init (eval-after-load 'tern
-          '(progn
-             (tern-ac-setup))))
-
 (use-package js2-mode
   :ensure t
-  :init (progn (add-hook 'js-mode-hook 'js2-minor-mode)
-               (custom-set-variables
-                '(js2-mode-show-parse-errors nil)
-                '(js2-mode-show-errors nil)
-                '(js2-mode-show-warnings nil)
-                '(js2-mode-show-strict-warnings nil)
-                '(js2-mode-show-warn-or-err nil))))
+  :init (progn (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+               (add-hook 'js-mode-hook 'js2-minor-mode)))
 
 (use-package nodejs-repl
   :ensure t)
@@ -365,3 +350,13 @@
 (use-package golden-ratio
   :ensure t
   :bind ("M-o" . golden-ratio))
+
+(custom-set-variables
+ '(js2-mode-show-parse-errors nil)
+ '(js2-mode-show-errors nil)
+ '(js2-mode-show-warnings nil)
+ '(js2-mode-show-strict-warnings nil)
+ '(js2-mode-show-warn-or-err nil)
+ '(elpy-modules
+   (quote
+    (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-yasnippet elpy-module-sane-defaults))))
