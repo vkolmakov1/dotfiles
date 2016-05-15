@@ -51,7 +51,7 @@
 (defun my/clear-kill-ring ()
   "Clears out kill-ring contents"
   (interactive)
-  (progn (setq kill-ring nil) (garbage-collect)))
+  (setq kill-ring nil))
 
 ;;;; core
 (use-package swiper
@@ -65,12 +65,12 @@
   :ensure t)
 
 (use-package ivy
-  :init (progn
-          (ivy-mode)
-          (setq ivy-display-style 'fancy)
-          (setq ivy-re-builders-alist
-                '((t . ivy--regex-fuzzy)))
-          (setq ivy-initial-inputs-alist nil))
+  :init
+  (ivy-mode)
+  (setq ivy-display-style 'fancy)
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-fuzzy)))
+  (setq ivy-initial-inputs-alist nil)
   :bind (:map ivy-minibuffer-map
               ("C-j" . ivy-immediate-done))
   :diminish ivy-mode)
@@ -88,18 +88,19 @@
 (use-package org
   :mode (("\\.org$" . org-mode))
   :init (global-set-key (kbd "C-c a") 'org-agenda)
-  :config (progn
-            (org-indent-mode 1)
-            (setq org-src-fontify-natively t)
-            (setq org-agenda-files (list "~/org/agenda/work.org"
-                                         "~/org/agenda/school.org"
-                                         "~/org/agenda/personal.org"))))
+  :config
+  (org-indent-mode 1)
+  (setq org-src-fontify-natively t)
+  (setq org-agenda-files (list "~/org/agenda/work.org"
+                               "~/org/agenda/school.org"
+                               "~/org/agenda/personal.org")))
 
 ;;;; general-utils
 (use-package auto-complete
   :ensure t
-  :init  (progn (ac-config-default)
-                (setq ac-auto-start 2))
+  :init
+  (ac-config-default)
+  (setq ac-auto-start 2)
   :bind (:map ac-complete-mode-map
               ("C-n" . ac-next)
               ("C-p" . ac-previous)))
@@ -117,14 +118,15 @@
 (use-package dired+
   :ensure t
   :defer t
-  :init (progn (if (executable-find "gls")
-                   (progn
-                     (setq insert-directory-program "gls")
-                     (setq dired-listing-switches "-lFaGh1v --group-directories-first")))
-               (diredp-toggle-find-file-reuse-dir 1)
-               (add-to-list 'dired-omit-extensions ".DS_Store")
-               (customize-set-variable 'diredp-hide-details-initially-flag nil)
-               (add-hook 'dired-mode-hook 'auto-revert-mode)))
+  :init
+  (if (executable-find "gls")
+      (progn
+        (setq insert-directory-program "gls")
+        (setq dired-listing-switches "-lFaGh1v --group-directories-first")))
+  (diredp-toggle-find-file-reuse-dir 1)
+  (add-to-list 'dired-omit-extensions ".DS_Store")
+  (customize-set-variable 'diredp-hide-details-initially-flag nil)
+  (add-hook 'dired-mode-hook 'auto-revert-mode))
 
 (use-package undo-tree
   :ensure t
@@ -157,9 +159,9 @@
 (use-package projectile
   :ensure t
   :defer t
-  :init (progn
-          (projectile-global-mode)
-          (setq projectile-completion-system 'ivy)))
+  :init
+  (projectile-global-mode)
+  (setq projectile-completion-system 'ivy))
 
 (use-package ace-window
   :ensure t
@@ -173,9 +175,9 @@
 
 (use-package region-bindings-mode
   :ensure t
-  :init (progn
-          (region-bindings-mode)
-          (region-bindings-mode-enable))
+  :init
+  (region-bindings-mode)
+  (region-bindings-mode-enable)
   :bind (:map region-bindings-mode-map
               ("u" . upcase-region)
               ("l" . downcase-region)))
@@ -227,23 +229,22 @@
 ;; sudo pip install elpy rope jedi
 (use-package elpy
   :ensure t
-  :init (progn
-          (add-hook 'python-mode-hook 'elpy-mode)
-          ))
+  :init
+  (add-hook 'python-mode-hook 'elpy-mode))
 
 ;;; web-stuff
 (use-package web-mode
   :ensure t
   :defer t
-  :init (progn
-          (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
-          (setq web-mode-enable-auto-pairing t)
-          (setq web-mode-enable-current-element-highlight t)
-          (setq-default indent-tabs-mode nil)
-          (setq web-mode-markup-indent-offset )
-          (setq web-mode-css-indent-offset 4)
-          (setq web-mode-code-indent-offset 4)))
+  :init
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-current-element-highlight t)
+  (setq-default indent-tabs-mode nil)
+  (setq web-mode-markup-indent-offset)
+  (setq web-mode-css-indent-offset 4)
+  (setq web-mode-code-indent-offset 4))
 
 (use-package emmet-mode
   :ensure t
@@ -257,8 +258,9 @@
 ;;;; javascript
 (use-package js2-mode
   :ensure t
-  :init (progn (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-               (add-hook 'js-mode-hook 'js2-minor-mode)))
+  :init
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-hook 'js-mode-hook 'js2-minor-mode))
 
 (use-package nodejs-repl
   :ensure t)
@@ -281,22 +283,22 @@
 (use-package slime
   :ensure t
   :defer t
-  :init (progn
-          (load (expand-file-name "~/quicklisp/slime-helper.el"))
-          (setq inferior-lisp-program "sbcl")
-	  (setq slime-protocol-version 'ignore)
-          (define-key slime-repl-mode-map (kbd "DEL") nil)
-          (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
+  :init
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  (setq inferior-lisp-program "sbcl")
+  (setq slime-protocol-version 'ignore)
+  (define-key slime-repl-mode-map (kbd "DEL") nil)
+  (define-key slime-repl-mode-map (kbd "M-RET") 'slime-repl-newline-and-indent)
 
-          (defun my/lisp-hook ()
-            (rainbow-delimiters-mode 1)
-            (paredit-mode 1)
-            (eldoc-mode 1)
-            (setq eldoc-idle-delay 0.3)
-            (diminish 'eldoc-mode))
+  (defun my/lisp-hook ()
+    (rainbow-delimiters-mode 1)
+    (paredit-mode 1)
+    (eldoc-mode 1)
+    (setq eldoc-idle-delay 0.3)
+    (diminish 'eldoc-mode))
 
-          (add-hook 'slime-repl-mode-hook 'my/lisp-hook)
-          (add-hook 'lisp-mode-hook 'my/lisp-hook)))
+  (add-hook 'slime-repl-mode-hook 'my/lisp-hook)
+  (add-hook 'lisp-mode-hook 'my/lisp-hook))
 
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (diminish 'eldoc-mode)
