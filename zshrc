@@ -29,6 +29,8 @@ alias ls="/usr/local/bin/gls --color -hX --group-directories-first"
 alias la="/usr/local/bin/gls --color -o -AhX --group-directories-first"
 ## brew install trash
 alias rm="trash"
+##
+alias clr="clear"
 
 # emacs
 alias e="emacsclient -t"
@@ -47,6 +49,7 @@ alias nig="npm i -g "
 alias nrs="npm run start"
 alias nrb="npm run build"
 alias nrt="npm run test"
+alias nrd="npm run dev"
 
 # rest
 alias bower="noglob bower"
