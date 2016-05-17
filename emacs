@@ -23,7 +23,6 @@
 (setq vc-follow-symlinks t) ; follow symlinks without asking
 
 (setq backup-directory-alist `(("." . "~/emacs-backups")))
-(toggle-truncate-lines 0)
 (setq inhibit-startup-message nil)
 (setq inhibit-startup-message t)
 ;; fix scrolling
@@ -35,15 +34,26 @@
               scroll-up-aggressively 0.01
               scroll-down-aggressively 0.01)
 
+;; don't fold lines, and use spaces by default
+(setq-default truncate-lines t
+              indent-tabs-mode nil)
+
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'focus-out-hook 'garbage-collect)
 
 (diminish 'subword-mode)
 (diminish 'auto-revert-mode)
 
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
 ;; ask before closing emacs
 (global-set-key (kbd "C-x C-c")
-                (lambda () (interactive)
+                (lambda ()
+                  (interactive)
                   (cond ((y-or-n-p "Close this session?")
                          (save-buffers-kill-terminal)))))
 
@@ -101,9 +111,11 @@
   :init
   (ac-config-default)
   (setq ac-auto-start 2)
-  :bind (:map ac-complete-mode-map
-              ("C-n" . ac-next)
-              ("C-p" . ac-previous)))
+  :bind
+  (:map ac-complete-mode-map
+        ("TAB" . nil)
+        ("C-n" . ac-next)
+        ("C-p" . ac-previous)))
 
 (use-package magit
   :ensure t
@@ -128,6 +140,16 @@
   (customize-set-variable 'diredp-hide-details-initially-flag nil)
   (add-hook 'dired-mode-hook 'auto-revert-mode))
 
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :mode ("\\.yasnippet\\'" . snippet-mode)
+  :init
+  (setq yas-snippet-dirs
+        '("~/dotfiles/snippets"))
+  (yas-global-mode)
+  :config (yas-reload-all))
+
 (use-package undo-tree
   :ensure t
   :defer t
@@ -139,6 +161,16 @@
   :ensure t
   :defer t
   :bind ("M-;" . comment-dwim-2))
+
+(use-package region-bindings-mode
+  :ensure t
+  :init
+  (region-bindings-mode)
+  (region-bindings-mode-enable)
+  :bind
+  (:map region-bindings-mode-map
+        ("u" . upcase-region)
+        ("l" . downcase-region)))
 
 (use-package expand-region
   :ensure t
@@ -153,8 +185,9 @@
 (use-package visual-regexp-steroids
   :ensure t
   :defer t
-  :bind (:map region-bindings-mode-map
-              ("r" . vr/select-query-replace)))
+  :bind
+  (:map region-bindings-mode-map
+        ("r" . vr/select-query-replace)))
 
 (use-package projectile
   :ensure t
@@ -173,25 +206,26 @@
   :bind (("C-x C-w" . simpleclip-copy)
          ("C-x C-y" . simpleclip-paste)))
 
-(use-package region-bindings-mode
-  :ensure t
-  :init
-  (region-bindings-mode)
-  (region-bindings-mode-enable)
-  :bind (:map region-bindings-mode-map
-              ("u" . upcase-region)
-              ("l" . downcase-region)))
-
 (use-package multiple-cursors
   :ensure t
   :defer t
-  :bind (:map region-bindings-mode-map
-              ("a" . mc/mark-all-like-this)
-              ("n" . mc/mark-next-like-this)
-              ("p" . mc/mark-previous-like-this)
-              ("P" . mc/unmark-previous-like-this)
-              ("N" . mc/unmark-next-like-this)))
+  :bind
+  (:map region-bindings-mode-map
+        ("a" . mc/mark-all-like-this)
+        ("n" . mc/mark-next-like-this)
+        ("p" . mc/mark-previous-like-this)
+        ("P" . mc/unmark-previous-like-this)
+        ("N" . mc/unmark-next-like-this)))
 
+(use-package drag-stuff
+  :ensure t
+  :init (drag-stuff-global-mode 1)
+  :bind
+  (:map region-bindings-mode-map
+        ("<up>" . drag-stuff-up)
+        ("<down>" . drag-stuff-down)
+        ("<left>" . drag-stuff-left)
+        ("<right>" . drag-stuff-right)))
 ;; mostly for javascript
 ;;;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
 (defun my/use-eslint-from-node-modules ()
@@ -218,8 +252,6 @@
                              (append flycheck-disabled-checkers
                                      '(javascript-jshint))))
 
-
-
 (use-package exec-path-from-shell
   :ensure t
   :init (when (memq window-system '(mac ns))
@@ -229,17 +261,14 @@
 ;; sudo pip install elpy rope jedi
 (use-package elpy
   :ensure t
-  :init
-  (add-hook 'python-mode-hook 'elpy-mode))
+  :init (add-hook 'python-mode-hook 'elpy-mode))
 
 ;;; web-stuff
 (use-package web-mode
   :ensure t
   :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
-  (setq web-mode-enable-auto-pairing t)
+  :mode "\\.html?\\'"
+  :config
   (setq web-mode-enable-current-element-highlight t)
   (setq-default indent-tabs-mode nil)
   (setq web-mode-markup-indent-offset)
@@ -253,7 +282,7 @@
 
 (use-package json-mode
   :ensure t
-  :config (add-to-list 'auto-mode-alist '("\\.json?\\'" . json-mode)))
+  :mode "\\.json\\'")
 
 ;;;; javascript
 (use-package js2-mode
@@ -268,8 +297,13 @@
 (use-package restclient
   :ensure t)
 
+(use-package css-mode
+  :ensure t
+  :mode "\\.css\\'")
+
 (use-package scss-mode
-  :ensure t)
+  :ensure t
+  :mode "\\.scss\\'")
 
 ;;;; lisp
 (use-package paredit
@@ -283,7 +317,7 @@
 (use-package slime
   :ensure t
   :defer t
-  :init
+  :config
   (load (expand-file-name "~/quicklisp/slime-helper.el"))
   (setq inferior-lisp-program "sbcl")
   (setq slime-protocol-version 'ignore)
@@ -362,3 +396,4 @@
  '(elpy-modules
    (quote
     (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-yasnippet elpy-module-sane-defaults))))
+(put 'narrow-to-region 'disabled nil)
