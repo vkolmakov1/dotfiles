@@ -22,7 +22,9 @@
 (electric-pair-mode)
 (setq vc-follow-symlinks t) ; follow symlinks without asking
 
-(setq backup-directory-alist `(("." . "~/emacs-backups")))
+(setq backup-dir "~/emacs-backups")
+(setq backup-directory-alist `(("." . ,backup-dir)))
+
 (setq inhibit-startup-message nil)
 (setq inhibit-startup-message t)
 ;; fix scrolling
@@ -38,11 +40,20 @@
 (setq-default truncate-lines t
               indent-tabs-mode nil)
 
-
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'focus-out-hook 'garbage-collect)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; http://stackoverflow.com/questions/1413837/emacs-auto-save-on-switch-buffer
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-frame (before other-frame-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice ace-window (before other-frame-now activate)
+  (when buffer-file-name (save-buffer)))
 
 (diminish 'subword-mode)
 (diminish 'auto-revert-mode)
@@ -66,7 +77,7 @@
 ;;;; core
 (use-package swiper
   :ensure t
-  :bind ("C-s" . swiper))
+  :bind* ("C-s" . swiper))
 
 (use-package flx
   :ensure t)
@@ -87,7 +98,7 @@
 
 (use-package counsel
   :ensure t
-  :bind (("M-x" . counsel-M-x)
+  :bind* (("M-x" . counsel-M-x)
          ("M-y" . counsel-yank-pop)
          ("C-c g" . counsel-git-grep)
          ("C-h b" . counsel-descbinds)
@@ -120,12 +131,12 @@
 (use-package magit
   :ensure t
   :defer t
-  :bind (("<f11>" . magit-log-all)
+  :bind* (("<f11>" . magit-log-all)
          ("<f12>" . magit-status)))
 
 (use-package ibuffer
   :ensure t
-  :bind ("C-x C-b" . ibuffer))
+  :bind* ("C-x C-b" . ibuffer))
 
 (use-package dired+
   :ensure t
@@ -155,12 +166,12 @@
   :defer t
   :diminish undo-tree-mode
   :config (global-undo-tree-mode)
-  :bind ("M-/" . undo-tree-visualize))
+  :bind* ("M-/" . undo-tree-visualize))
 
 (use-package comment-dwim-2
   :ensure t
   :defer t
-  :bind ("M-;" . comment-dwim-2))
+  :bind* ("M-;" . comment-dwim-2))
 
 (use-package region-bindings-mode
   :ensure t
@@ -175,12 +186,12 @@
 (use-package expand-region
   :ensure t
   :defer t
-  :bind (("M-=" . er/expand-region)
+  :bind* (("M-=" . er/expand-region)
          ("M--" . er/contract-region)))
 
 (use-package avy
   :ensure t
-  :bind ("M-a" . avy-goto-word-1))
+  :bind* ("M-a" . avy-goto-word-1))
 
 (use-package visual-regexp-steroids
   :ensure t
@@ -199,11 +210,11 @@
 (use-package ace-window
   :ensure t
   :defer t
-  :bind ("C-x o" . ace-window))
+  :bind* ("C-x o" . ace-window))
 
 (use-package simpleclip
   :ensure t
-  :bind (("C-x C-w" . simpleclip-copy)
+  :bind* (("C-x C-w" . simpleclip-copy)
          ("C-x C-y" . simpleclip-paste)))
 
 (use-package multiple-cursors
@@ -295,7 +306,13 @@
   :ensure t)
 
 (use-package restclient
-  :ensure t)
+  :ensure t
+  :config (add-hook 'restclient-mode-hook '(lambda () (local-set-key (kbd "C-c C-c") 'restclient-http-send-current-stay-in-window)))
+  :bind
+  (:map restclient-mode-map
+        ("C-c C-c" . restclient-http-send-current-stay-in-window) ; this doesn't work for some reason :(
+        ("M-p" . restclient-jump-prev)
+        ("M-n" . restclient-jump-next)))
 
 (use-package css-mode
   :ensure t
@@ -308,8 +325,10 @@
 ;;;; lisp
 (use-package paredit
   :ensure t
-  :bind (("M-{" . paredit-forward-barf-sexp)
-         ("M-}" . paredit-forward-slurp-sexp)))
+  :bind
+  (:map paredit-mode-map
+        ("M-{" . paredit-forward-barf-sexp)
+        ("M-}" . paredit-forward-slurp-sexp)))
 
 (use-package rainbow-delimiters
   :ensure t)
