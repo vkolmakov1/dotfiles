@@ -45,6 +45,19 @@
 (add-hook 'focus-out-hook 'garbage-collect)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;; switch between panes
+(setq windmove-wrap-around t) ; wrap around on pane-switching
+(bind-keys*
+ ("C-x <right>" . windmove-right)
+ ("C-x <left>" . windmove-left)
+ ("C-x <up>" . windmove-up)
+ ("C-x <down>" . windmove-down))
+
+;; better keybinds for pane splits
+(bind-keys*
+ ("C-x -" . split-window-below)
+ ("C-x |" . split-window-right))
+
 ;; http://stackoverflow.com/questions/1413837/emacs-auto-save-on-switch-buffer
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
