@@ -23,7 +23,8 @@
 (setq vc-follow-symlinks t) ; follow symlinks without asking
 
 (setq backup-dir "~/emacs-backups")
-(setq backup-directory-alist `(("." . ,backup-dir)))
+(setq backup-directory-alist `((".*" . ,backup-dir)))
+(setq auto-save-file-name-transforms `((".*" ,backup-dir t)))
 
 (setq inhibit-startup-message nil)
 (setq inhibit-startup-message t)
@@ -132,12 +133,12 @@
 ;;;; general-utils
 (use-package auto-complete
   :ensure t
+  :diminish auto-complete-mode
   :init
   (ac-config-default)
   (setq ac-auto-start 2)
   :bind
   (:map ac-complete-mode-map
-        ("TAB" . nil)
         ("C-n" . ac-next)
         ("C-p" . ac-previous)))
 
@@ -244,6 +245,7 @@
 (use-package drag-stuff
   :ensure t
   :init (drag-stuff-global-mode 1)
+  :diminish drag-stuff-mode
   :bind
   (:map region-bindings-mode-map
         ("<up>" . drag-stuff-up)
@@ -302,7 +304,9 @@
 (use-package emmet-mode
   :ensure t
   :defer t
-  :init (add-hook 'web-mode-hook 'emmet-mode))
+  :init
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'js2-jsx-mode-hook 'emmet-mode))
 
 (use-package json-mode
   :ensure t
@@ -313,6 +317,7 @@
   :ensure t
   :init
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
   (add-hook 'js-mode-hook 'js2-minor-mode))
 
 (use-package nodejs-repl
