@@ -278,11 +278,6 @@
                              (append flycheck-disabled-checkers
                                      '(javascript-jshint))))
 
-(use-package exec-path-from-shell
-  :ensure t
-  :init (when (memq window-system '(mac ns))
-          (exec-path-from-shell-initialize)))
-
 ;;;; python
 ;; sudo pip install elpy rope jedi
 (use-package elpy
@@ -422,7 +417,9 @@
 
 (use-package golden-ratio
   :ensure t
-  :bind ("M-o" . golden-ratio))
+  :bind*
+  ("M-o" . golden-ratio)
+  ("M-O" . balance-windows))
 
 (custom-set-variables
  '(js2-mode-show-parse-errors nil)
