@@ -59,6 +59,11 @@
  ("C-x -" . split-window-below)
  ("C-x |" . split-window-right))
 
+;; keybinds for moving around between functions
+(bind-keys*
+ ("M-p" . beginning-of-defun)
+ ("M-n" . end-of-defun))
+
 ;; http://stackoverflow.com/questions/1413837/emacs-auto-save-on-switch-buffer
 (defadvice switch-to-buffer (before save-buffer-now activate)
   (when buffer-file-name (save-buffer)))
@@ -134,9 +139,10 @@
 (use-package auto-complete
   :ensure t
   :diminish auto-complete-mode
-  :init
+  :config
   (ac-config-default)
-  (setq ac-auto-start 2)
+  (setq ac-auto-start 3)
+  (setq ac-delay 0.5)
   :bind
   (:map ac-complete-mode-map
         ("C-n" . ac-next)
@@ -195,7 +201,8 @@
   :bind
   (:map region-bindings-mode-map
         ("u" . upcase-region)
-        ("l" . downcase-region)))
+        ("l" . downcase-region)
+        ("c" . capitalize-region)))
 
 (use-package expand-region
   :ensure t
@@ -240,7 +247,8 @@
         ("n" . mc/mark-next-like-this)
         ("p" . mc/mark-previous-like-this)
         ("P" . mc/unmark-previous-like-this)
-        ("N" . mc/unmark-next-like-this)))
+        ("N" . mc/unmark-next-like-this)
+        ("m" . mc/mark-all-in-region)))
 
 (use-package drag-stuff
   :ensure t
