@@ -37,9 +37,8 @@
               scroll-up-aggressively 0.01
               scroll-down-aggressively 0.01)
 
-;; don't fold lines, and use spaces by default
-(setq-default truncate-lines t
-              indent-tabs-mode nil)
+;; Use spaces by default
+(setq-default indent-tabs-mode nil)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -61,8 +60,8 @@
 
 ;; keybinds for moving around between functions
 (bind-keys*
- ("M-p" . beginning-of-defun)
- ("M-n" . end-of-defun))
+ ("M-a" . backward-sentence)
+ ("M-e" . forward-sentence))
 
 ;; http://stackoverflow.com/questions/1413837/emacs-auto-save-on-switch-buffer
 (defadvice switch-to-buffer (before save-buffer-now activate)
@@ -212,7 +211,7 @@
 
 (use-package avy
   :ensure t
-  :bind* ("M-a" . avy-goto-word-1))
+  :bind* ("M-l" . avy-goto-word-1))
 
 (use-package visual-regexp-steroids
   :ensure t
@@ -260,6 +259,15 @@
         ("<down>" . drag-stuff-down)
         ("<left>" . drag-stuff-left)
         ("<right>" . drag-stuff-right)))
+
+(use-package markdown-mode
+  :ensure t
+  :mode "\\.md\\'")
+
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.yaml\\'")
+
 ;; mostly for javascript
 ;;;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
 (defun my/use-eslint-from-node-modules ()
@@ -422,12 +430,6 @@
                     vc-mode
                     " "
                     mode-line-modes))))
-
-(use-package golden-ratio
-  :ensure t
-  :bind*
-  ("M-o" . golden-ratio)
-  ("M-O" . balance-windows))
 
 (custom-set-variables
  '(js2-mode-show-parse-errors nil)
