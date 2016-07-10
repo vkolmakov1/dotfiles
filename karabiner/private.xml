@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<root>
+  <appdef>
+    <appname>INTELLIJ</appname>
+    <equal>com.jetbrains.intellij</equal>
+  </appdef>
+
+  <appdef>
+    <appname>WEBSTORM</appname>
+    <equal>com.jetbrains.WebStorm</equal>
+  </appdef>
+
+  <appdef>
+    <appname>EMACS</appname>
+    <equal>org.gnu.Emacs</equal>
+  </appdef>
+
+  <appdef>
+    <appname>ITERM2</appname>
+    <equal>com.googlecode.iterm2</equal>
+  </appdef>
+
+  <item>
+    <name>Left Command to Control in emacs, iterm2, intellij</name>
+    <identifier>private.appdef</identifier>
+    <only>EMACS, ITERM2, INTELLIJ, WEBSTORM</only>
+    <autogen>__KeyToKey__ KeyCode::COMMAND_L, KeyCode::CONTROL_L</autogen>
+  </item>
+</root>
