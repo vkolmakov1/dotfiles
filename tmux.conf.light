@@ -1,0 +1,68 @@
+# colors
+text_color=colour232
+selected_text_color=colour99
+background_color=colour252
+message_color=colour99
+
+# misc
+set -g default-terminal "screen-256color"
+## Start windows and panes at 1 instead of 0
+set -g base-index 1
+setw -g pane-base-index 1
+setw -g aggressive-resize on
+set -g status-justify right
+set -g status-position bottom
+# end misc
+
+# keybinds
+## change default prefix
+set-option -g prefix "C-\\"
+## split panes using | and - and open them in the same dir
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+## open new window in the same directory
+bind c new-window -c "#{pane_current_path}"
+## swap between windows with arrows
+bind Right next-window
+bind Left previous-windo
+## search mode
+bind s copy-mode
+bind -t emacs-copy 'p' scroll-up
+bind -t emacs-copy 'n' scroll-down
+# make tmux copy in system clipboard
+bind-key -t emacs-copy 'M-w' copy-pipe "reattach-to-user-namespace pbcopy"
+## chose-session menu
+bind-key l choose-session
+## quick config file reload
+bind r source ~/.tmux.conf
+## move between panes by double-pressing the prefix
+bind "C-\\" display-panes
+## move windows around
+bind-key S-Left swap-window -t -1
+bind-key S-Right swap-window -t +1
+# end keybinds
+
+set -g status-bg $background_color
+set -g status-utf8 on
+set -g status-right ""
+tm_session_name="#[fg=$text_color]@#S"
+
+set -g status-left $tm_session_name
+
+# Message colours
+set -g message-bg $message_color
+set -g message-fg $text_color
+
+# Pane border settings
+set -g display-panes-active-colour $selected_text_color
+set -g display-panes-colour $text_color
+
+# Inactive window colours and settings
+set-window-option -g window-status-fg $text_color
+set-window-option -g window-status-bg default
+set -g window-status-format "#W"
+
+# Active window settings
+set-window-option -g window-status-current-fg $selected_text_color
+set-window-option -g window-status-current-bg default
+set-window-option -g window-status-current-format "#[bold]#W"
