@@ -42,7 +42,6 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(add-hook 'focus-out-hook 'garbage-collect)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; switch between panes
@@ -79,13 +78,6 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-;; ask before closing emacs
-(global-set-key (kbd "C-x C-c")
-                (lambda ()
-                  (interactive)
-                  (cond ((y-or-n-p "Close this session?")
-                         (save-buffers-kill-terminal)))))
-
 ;; create a command to clear kill-ring
 (defun my/clear-kill-ring ()
   "Clears out kill-ring contents"
@@ -116,12 +108,12 @@
 
 (use-package counsel
   :ensure t
-  :bind* (("M-x" . counsel-M-x)
-         ("M-y" . counsel-yank-pop)
-         ("C-c g" . counsel-git-grep)
-         ("C-h b" . counsel-descbinds)
-         ("C-h f" . counsel-describe-function)
-         ("C-c k" . counsel-ag)))
+  :bind*
+  (("M-x" . counsel-M-x)
+   ("M-y" . counsel-yank-pop)
+   ("C-c g" . counsel-ag)
+   ("C-h b" . counsel-descbinds)
+   ("C-h f" . counsel-describe-function)))
 
 ;;;; org-mode
 (use-package org
@@ -150,8 +142,9 @@
 (use-package magit
   :ensure t
   :defer t
-  :bind* (("<f11>" . magit-log-all)
-         ("<f12>" . magit-status)))
+  :bind*
+  (("<f11>" . magit-log-all)
+   ("<f12>" . magit-status)))
 
 (use-package ibuffer
   :ensure t
@@ -167,8 +160,7 @@
         (setq dired-listing-switches "-lFaGh1v --group-directories-first")))
   (diredp-toggle-find-file-reuse-dir 1)
   (add-to-list 'dired-omit-extensions ".DS_Store")
-  (customize-set-variable 'diredp-hide-details-initially-flag nil)
-  (add-hook 'dired-mode-hook 'auto-revert-mode))
+  (customize-set-variable 'diredp-hide-details-initially-flag nil))
 
 (use-package yasnippet
   :ensure t
@@ -206,8 +198,9 @@
 (use-package expand-region
   :ensure t
   :defer t
-  :bind* (("M-=" . er/expand-region)
-         ("M--" . er/contract-region)))
+  :bind*
+  (("M-=" . er/expand-region)
+   ("M--" . er/contract-region)))
 
 (use-package avy
   :ensure t
@@ -234,8 +227,9 @@
 
 (use-package simpleclip
   :ensure t
-  :bind* (("C-x C-w" . simpleclip-copy)
-         ("C-x C-y" . simpleclip-paste)))
+  :bind*
+  (("C-x C-w" . simpleclip-copy)
+   ("C-x C-y" . simpleclip-paste)))
 
 (use-package multiple-cursors
   :ensure t
@@ -256,9 +250,7 @@
   :bind
   (:map region-bindings-mode-map
         ("<up>" . drag-stuff-up)
-        ("<down>" . drag-stuff-down)
-        ("<left>" . drag-stuff-left)
-        ("<right>" . drag-stuff-right)))
+        ("<down>" . drag-stuff-down)))
 
 (use-package markdown-mode
   :ensure t
@@ -329,19 +321,15 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
-  (add-hook 'js-mode-hook 'js2-minor-mode))
+  (add-hook 'js-mode-hook 'js2-minor-mode)
+  :config
+  (custom-set-variables
+   '(js2-mode-show-parse-errors nil)
+   '(js2-mode-show-errors nil)
+   '(js2-mode-show-warnings nil)
+   '(js2-mode-show-strict-warnings nil)
+   '(js2-mode-show-warn-or-err nil)))
 
-(use-package nodejs-repl
-  :ensure t)
-
-(use-package restclient
-  :ensure t
-  :config (add-hook 'restclient-mode-hook '(lambda () (local-set-key (kbd "C-c C-c") 'restclient-http-send-current-stay-in-window)))
-  :bind
-  (:map restclient-mode-map
-        ("C-c C-c" . restclient-http-send-current-stay-in-window) ; this doesn't work for some reason :(
-        ("M-p" . restclient-jump-prev)
-        ("M-n" . restclient-jump-next)))
 
 (use-package css-mode
   :ensure t
@@ -358,9 +346,6 @@
   (:map paredit-mode-map
         ("M-{" . paredit-forward-barf-sexp)
         ("M-}" . paredit-forward-slurp-sexp)))
-
-(use-package rainbow-delimiters
-  :ensure t)
 
 (use-package slime
   :ensure t
@@ -389,9 +374,14 @@
                                   (eldoc-mode 1)))
 
 ;;;; looks
-(defmacro my/set-theme (tname)
+;; theme
+(defmacro my/set-theme (tname &optional themepostfix)
   "Install and set theme using use-package"
-  (let ((theme-name tname)
+  (let ((theme-name (if themepostfix (funcall (lambda ()
+                                (intern (concat (symbol-name tname)
+                                                "-"
+                                                (symbol-name themepostfix)))))
+                      tname))
         (package-name (funcall (lambda ()
                                  (intern (concat
                                           (symbol-name tname)
@@ -403,6 +393,7 @@
 
 (my/set-theme ample)
 
+;; modeline
 (defun my/shorten-dir (dir-str)
   "Given a directory keep the only the last two items"
   (let ((dirs (reverse (split-string dir-str "/"))))
@@ -430,14 +421,3 @@
                     vc-mode
                     " "
                     mode-line-modes))))
-
-(custom-set-variables
- '(js2-mode-show-parse-errors nil)
- '(js2-mode-show-errors nil)
- '(js2-mode-show-warnings nil)
- '(js2-mode-show-strict-warnings nil)
- '(js2-mode-show-warn-or-err nil)
- '(elpy-modules
-   (quote
-    (elpy-module-company elpy-module-eldoc elpy-module-pyvenv elpy-module-yasnippet elpy-module-sane-defaults))))
-(put 'narrow-to-region 'disabled nil)

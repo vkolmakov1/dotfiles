@@ -5,7 +5,7 @@ export TERM=xterm-256color
 # Making emacs start server on emacsclient call
 export ALTERNATE_EDITOR=""
 
-ZSH_THEME="minimal"
+ZSH_THEME="philips"
 
 COMPLETION_WAITING_DOTS="true"
 
