@@ -1,19 +1,20 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/vkolmakov/.oh-my-zsh
+export ZSH=~/dotfiles/oh-my-zsh
 
 export TERM=xterm-256color
 # Making emacs start server on emacsclient call
 export ALTERNATE_EDITOR=""
 
 ZSH_THEME="philips"
-
 COMPLETION_WAITING_DOTS="true"
 
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
 # plugins
-plugins=(git npm node meteor)
+plugins=(git npm node meteor history-substring-search)
 
 source $ZSH/oh-my-zsh.sh
-
 # path
 export PATH="/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/Library/TeX/texbin:/usr/local/go/bin"
 export PATH="/Library/PostgreSQL/9.5/bin:$PATH"
@@ -58,3 +59,12 @@ alias h="tldr"
 
 # ssh
 alias fourier="ssh vkolmako@fourier.cs.iit.edu"
+
+# zaw
+source ~/dotfiles/zaw/zaw.zsh
+
+bindkey '^R' zaw-history
+zstyle ':filter-select' max-lines 10
+zstyle ':filter-select' case-insensitive yes
+zstyle ':filter-select' extended-search yes
+zstyle ':filter-select' hist-find-no-dups yes
