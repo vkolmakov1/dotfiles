@@ -33,6 +33,8 @@ alias rm="trash"
 ##
 alias clr="clear"
 
+alias -g Gi='| grep -i --color=always'
+
 # emacs
 alias e="emacsclient -t"
 alias kill-emacs="emacsclient -e \"(kill-emacs)\""
@@ -63,8 +65,9 @@ alias fourier="ssh vkolmako@fourier.cs.iit.edu"
 # zaw
 source ~/dotfiles/zaw/zaw.zsh
 
-bindkey '^R' zaw-history
+bindkey '^R' "zaw-history"
 zstyle ':filter-select' max-lines 10
 zstyle ':filter-select' case-insensitive yes
 zstyle ':filter-select' extended-search yes
 zstyle ':filter-select' hist-find-no-dups yes
+zstyle ':filter-select' rotate-list yes
