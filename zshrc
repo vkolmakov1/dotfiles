@@ -71,3 +71,5 @@ zstyle ':filter-select' case-insensitive yes
 zstyle ':filter-select' extended-search yes
 zstyle ':filter-select' hist-find-no-dups yes
 zstyle ':filter-select' rotate-list yes
+
+alias "gh"="git log --oneline --graph --decorate --all"
