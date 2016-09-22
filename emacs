@@ -254,7 +254,9 @@
 
 (use-package markdown-mode
   :ensure t
-  :mode "\\.md\\'")
+  :mode "\\.md\\'"
+  :bind
+  (("M-RET" . markdown-insert-list-item)))
 
 (use-package yaml-mode
   :ensure t
@@ -338,6 +340,12 @@
 (use-package scss-mode
   :ensure t
   :mode "\\.scss\\'")
+
+;;;; scala
+(use-package scala-mode
+  :interpreter
+  ("scala" . scala-mode)
+  :ensure t)
 
 ;;;; lisp
 (use-package paredit
