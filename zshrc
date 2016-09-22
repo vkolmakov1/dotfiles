@@ -15,8 +15,10 @@ bindkey -M emacs '^N' history-substring-search-down
 plugins=(git npm node meteor history-substring-search)
 
 source $ZSH/oh-my-zsh.sh
+source ~/dotfiles/fzf.zsh
+
 # path
-export PATH="/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/Library/TeX/texbin:/usr/local/go/bin"
+export PATH="/usr/local/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/Library/TeX/texbin:/usr/local/go/bin"
 export PATH="/Library/PostgreSQL/9.5/bin:$PATH"
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/Cellar/openssl/1.0.2d_1/lib
 
@@ -54,6 +56,10 @@ alias nrb="npm run build"
 alias nrt="npm run test"
 alias nrd="npm run dev"
 
+# python
+alias py3="python3"
+alias py="python"
+
 # rest
 alias bower="noglob bower"
 ## nig tldr
@@ -70,6 +76,5 @@ zstyle ':filter-select' max-lines 10
 zstyle ':filter-select' case-insensitive yes
 zstyle ':filter-select' extended-search yes
 zstyle ':filter-select' hist-find-no-dups yes
-zstyle ':filter-select' rotate-list yes
 
 alias "gh"="git log --oneline --graph --decorate --all"
