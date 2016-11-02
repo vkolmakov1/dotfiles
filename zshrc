@@ -65,6 +65,9 @@ alias bower="noglob bower"
 ## nig tldr
 alias h="tldr"
 
+alias dockerstopall="docker stop $(docker ps -a -q)"
+alias dockerrmall="docker rm $(docker ps -a -q)"
+
 # ssh
 alias fourier="ssh vkolmako@fourier.cs.iit.edu"
 
