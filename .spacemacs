@@ -46,14 +46,12 @@ values."
      emacs-lisp
      git
      markdown
-     ;; org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
      spell-checking
      syntax-checking
      version-control
-     shell
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -61,7 +59,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
-     (vue-mode :location (recipe :fetcher github :repo "codefalling/vue-mode"))
+     (vue-mode)
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -299,11 +297,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-  (setq exec-path-from-shell-arguments '("-l"))
-  (setq-default dotspacemacs-configuration-layers
-                '((eshell :variables
-                         shell-default-term-shell "/usr/local/bin/zsh"
-                         shell-default-shell 'eshell)))
+  (setq exec-path-from-shell-check-startup-files nil)
   )
 
 (defun dotspacemacs/user-config ()
@@ -314,6 +308,16 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (global-hl-line-mode 0)
+  (setq vc-follow-symlinks t)
+  (add-to-list 'exec-path "~/.opam/system/bin")
+  (with-eval-after-load 'emmet-mode
+    (define-key emmet-mode-keymap (kbd "<tab>") 'indent-for-tab-command))
+
+  (add-hook 'vue-mode-hook 'company-mode)
+  (remove-hook 'js2-mode-hook 'flyspell-mode)
+  (remove-hook 'vue-mode-hook 'flyspell-mode)
+  (remove-hook 'web-mode-hook 'flyspell-mode)
+  (remove-hook 'js-mode-hook 'flyspell-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -332,6 +336,17 @@ you should place your code here."
  '(package-selected-packages
    (quote
     (xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode cython-mode company-anaconda anaconda-mode pythonic utop tuareg caml ocp-indent merlin vue-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode company-web web-completion-data git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter diff-hl smeargle orgit org mwim mmm-mode markdown-toc markdown-mode magit-gitflow gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor company-tern dash-functional company-statistics company auto-yasnippet auto-dictionary ac-ispell auto-complete sublime-themes web-beautify tern livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode ws-butler window-numbering which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash async aggressive-indent adaptive-wrap ace-window ace-link avy quelpa package-build spacemacs-theme)))
+ '(vue-modes
+   (quote
+    ((:type template :name nil :mode web-mode)
+     (:type template :name html :mode html-mode)
+     (:type script :name nil :mode js-mode)
+     (:type script :name js :mode js-mode)
+     (:type script :name es6 :mode js-mode)
+     (:type style :name nil :mode css-mode)
+     (:type style :name css :mode css-mode)
+     (:type style :name scss :mode scss-mode)
+     (:type style :name sass :mode sass-mode))))
  '(web-mode-code-indent-offset 2)
  '(web-mode-css-indent-offset 2)
  '(web-mode-markup-indent-offset 2)
