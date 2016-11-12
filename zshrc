@@ -18,9 +18,7 @@ source $ZSH/oh-my-zsh.sh
 source ~/dotfiles/fzf.zsh
 
 # path
-export PATH="/usr/local/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:/Library/TeX/texbin:/usr/local/go/bin"
-export PATH="/Library/PostgreSQL/9.5/bin:$PATH"
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/Cellar/openssl/1.0.2d_1/lib
+export PATH="/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/go/bin"
 
 # golang
 export GOROOT=/usr/local/go
