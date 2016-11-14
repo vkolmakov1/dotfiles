@@ -54,6 +54,14 @@ alias nrb="npm run build"
 alias nrt="npm run test"
 alias nrd="npm run dev"
 
+# yarn
+alias ya="yarn add"
+alias yad="yarn add --dev"
+alias yrs="yarn run start"
+alias yrb="yarn run build"
+alias yrt="yarn run test"
+alias yrd="yarn run dev"
+
 # python
 alias py3="python3"
 alias py="python"
