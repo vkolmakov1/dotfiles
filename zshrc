@@ -87,3 +87,7 @@ zstyle ':filter-select' extended-search yes
 zstyle ':filter-select' hist-find-no-dups yes
 
 alias "gh"="git log --oneline --graph --decorate --all"
+
+function killallmatching () {
+    ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
+}
