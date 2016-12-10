@@ -311,12 +311,16 @@ you should place your code here."
   (global-hl-line-mode 0)
   (setq vc-follow-symlinks t)
 
+  ;; replace default emmet-expand keybinding with indent
   (with-eval-after-load 'emmet-mode
     (evil-define-key 'emacs emmet-mode-keymap (kbd "TAB") 'indent-for-tab-command)
     (evil-define-key 'emacs emmet-mode-keymap (kbd "<tab>") 'indent-for-tab-command))
 
+  ;; reparse on save
   (add-hook 'vue-mode-hook
             (lambda () (add-hook 'before-save-hook 'vue-mode-reparse nil 'local)))
+
+  (add-hook 'markdown-mode-hook 'flyspell-mode)
 
   (bind-keys* ("C-x -" . split-window-below)
               ("C-x |" . split-window-right)
