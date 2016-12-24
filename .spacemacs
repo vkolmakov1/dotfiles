@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     (elm :variables
+          elm-format-command "elm-format-0.18")
      ivy
      auto-completion
      git
@@ -51,7 +53,8 @@ values."
      emacs-lisp
      scala
 
-     markdown
+     (markdown :variables
+               markdown-live-preview-engine 'vmd)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -136,7 +139,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(soft-charcoal)
+   dotspacemacs-themes '(soft-charcoal
+                         spacemacs-dark)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -319,6 +323,9 @@ you should place your code here."
   ;; reparse on save
   (add-hook 'vue-mode-hook
             (lambda () (add-hook 'before-save-hook 'vue-mode-reparse nil 'local)))
+
+  (add-hook 'elm-mode-hook
+            (lambda () (add-hook 'before-save-hook 'elm-mode-format-buffer nil 'local)))
 
   (add-hook 'markdown-mode-hook 'flyspell-mode)
 
