@@ -87,8 +87,6 @@
   :init
   (ivy-mode)
   (setq ivy-display-style 'fancy)
-  (setq ivy-re-builders-alist
-        '((t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)
   :bind (:map ivy-minibuffer-map
               ("C-j" . ivy-immediate-done))
