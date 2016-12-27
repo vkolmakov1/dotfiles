@@ -221,6 +221,28 @@
 
 
 ;; LOOKS
+;; theme
+(use-package arjen-grey-theme
+  :ensure t
+  :config
+  (load-theme 'arjen-grey t))
+
+(defun my/set-font-height (height)
+  (set-face-attribute 'default nil :font "Source Code Pro" :height height))
+
+(setq my/default-font-height 145)
+(setq my/live-coding-font-height 210)
+
+(my/set-font-height my/default-font-height)
+(defun my/toggle-live-coding ()
+  (interactive)
+  (let ((default-height my/default-font-height)
+        (live-coding-height my/live-coding-font-height)
+        (current-height (face-attribute 'default :height)))
+    (if (>= current-height live-coding-height)
+        (my/set-font-height default-height)
+      (my/set-font-height live-coding-height))))
+
 ;; modeline
 (defun my/shorten-dir (dir-str)
   "Given a directory keep the only the last two items"
