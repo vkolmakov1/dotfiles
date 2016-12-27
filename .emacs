@@ -220,6 +220,20 @@
   (setq js-indent-level 2))
 
 
+;; elisp
+(use-package paredit
+  :ensure t
+  :config (add-hook 'paredit-mode 'emacs-lisp-mode))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :config (add-hook 'rainbow-delimiters-mode 'emacs-lisp-mode))
+
+(use-package highlight-parentheses
+  :ensure t
+  :diminish highlight-parentheses-mode
+  :config (add-hook 'highlight-parentheses-mode 'emacs-lisp-mode))
+
 ;; LOOKS
 ;; theme
 (use-package arjen-grey-theme
