@@ -137,7 +137,8 @@
 
 (use-package visual-regexp-steroids
   :ensure t
-  :defer t) ;; TODO: add better kbd
+  :defer t
+  :bind ("C-x r r" . vr/query-replace))
 
 (use-package projectile
   :ensure t
@@ -155,7 +156,9 @@
 (use-package multiple-cursors
   :ensure t
   :defer t
-  :bind) ;; TODO: add better kbds
+  :bind*
+  ("M-n" . mc/mark-next-like-this)
+  ("M-p" . mc/mark-previous-like-this))
 
 (use-package company
   :ensure t
@@ -243,7 +246,7 @@
   (set-face-attribute 'default nil :font "Source Code Pro" :height height))
 
 (setq my/default-font-height 145)
-(setq my/live-coding-font-height 210)
+(setq my/live-coding-font-height 200)
 
 (my/set-font-height my/default-font-height)
 (defun my/toggle-live-coding ()
