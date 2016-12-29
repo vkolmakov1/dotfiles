@@ -195,15 +195,14 @@
   :ensure t
   :config
   (setq-default indent-tabs-mode nil)
-  (let ((default-offset 2))
+  (let ((default-offset 2)
+        (default-padding 0))
     (setq web-mode-markup-indent-offset default-offset)
     (setq web-mode-css-indent-offset default-offset)
     (setq web-mode-code-indent-offset default-offset)
-    (setq web-mode-indent-style default-offset)
-    (setq web-mode-script-padding default-offset)
-    (setq web-mode-style-padding default-offset)
-    (setq web-mode-block-padding default-offset)
-    )
+    (setq web-mode-script-padding default-padding)
+    (setq web-mode-style-padding default-padding)
+    (setq web-mode-block-padding default-padding))
   :mode ("\\.html?\\'"
          "\\.vue?\\'"))
 
