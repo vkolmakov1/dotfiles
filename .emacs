@@ -189,15 +189,40 @@
 
 (use-package ws-butler
   :ensure t
-  :diminish (ws-butler-mode)
+  :diminish ws-butler-mode
   :init
   (ws-butler-global-mode))
 
 (use-package which-key
   :ensure t
-  :diminish (which-key-mode)
+  :diminish which-key-mode
   :init (which-key-mode)
   :config (setq which-key-idle-delay 1.5))
+
+;;;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (file-executable-p eslint)
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+
+
+(use-package flycheck
+  :ensure t
+  :diminish flycheck-mode
+  :init
+  (my/add-to-hooks 'flycheck-mode '(javascript-mode
+                                    emacs-lisp-mode))
+
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)
+  :config
+  (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers
+                                                   '(javascript-jshint))))
 
 ;; MODES
 
@@ -269,9 +294,9 @@
       (my/set-font-height live-coding-height))))
 
 ;; modeline
-(defun my/shorten-dir (dir-str)
-  "Given a directory keep the only the last two items"
-  (let ((dirs (reverse (split-string dir-str "/"))))
+(defun my/shorten-dir (directory)
+  "Given a DIRECTORY keep the only the last two items."
+  (let ((dirs (reverse (split-string directory "/"))))
     (cond ((and (equal (car dirs) "")
                 (equal (cadr dirs) ""))
            "/")
