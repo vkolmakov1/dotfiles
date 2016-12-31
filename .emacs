@@ -147,6 +147,11 @@
   (projectile-global-mode)
   (setq projectile-completion-system 'ivy))
 
+(use-package exec-path-from-shell
+  :ensure t
+  :init
+  (exec-path-from-shell-initialize))
+
 (use-package simpleclip
   :ensure t
   :bind*
@@ -278,7 +283,7 @@
 
 
 (setq mode-line-format
-      (setq default-mode-line-format
+      (setq-default mode-line-format
             (list '("-"
                     (:eval (if (buffer-modified-p) "M" "-"))
                     (:eval (if buffer-read-only    "R" "-"))
