@@ -270,6 +270,19 @@
   :diminish highlight-parentheses-mode
   :config (add-hook 'highlight-parentheses-mode 'emacs-lisp-mode))
 
+;; elixir
+(use-package elixir-mode
+  :ensure t)
+
+(use-package alchemist
+  :ensure t
+  :config (add-hook 'alchemist-mode 'elixir-mode))
+
+;; rest
+(use-package markdown-mode
+  :ensure t
+  :mode "\\.md?\\'")
+
 ;; LOOKS
 ;; theme
 (use-package arjen-grey-theme
