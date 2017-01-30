@@ -121,7 +121,7 @@
   :ensure t
   :defer t
   :diminish undo-tree-mode
-  :config (global-undo-tree-mode)
+  :init (global-undo-tree-mode)
   :bind* ("M-/" . undo-tree-visualize))
 
 (use-package expand-region
@@ -132,8 +132,7 @@
    ("M--" . er/contract-region)))
 
 (use-package avy
-  :ensure t
-  :bind* ("M-l" . avy-goto-word-1))
+  :ensure t)
 
 (use-package visual-regexp-steroids
   :ensure t
@@ -152,12 +151,6 @@
   :init
   (exec-path-from-shell-initialize))
 
-(use-package simpleclip
-  :ensure t
-  :bind*
-  (("C-x C-w" . simpleclip-copy)
-   ("C-x C-y" . simpleclip-paste)))
-
 (use-package multiple-cursors
   :ensure t
   :defer t
@@ -169,7 +162,7 @@
   :ensure t
   :defer t
   :diminish company-mode
-  :config (global-company-mode)
+  :init (global-company-mode)
   :bind
   (:map company-active-map
         ("C-n" . company-select-next)
@@ -199,7 +192,7 @@
   :init (which-key-mode)
   :config (setq which-key-idle-delay 1.5))
 
-;;;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+;; borrowed from http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
 (defun my/use-eslint-from-node-modules ()
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
@@ -208,21 +201,19 @@
                       (expand-file-name "node_modules/eslint/bin/eslint.js"
                                         root))))
     (when (file-executable-p eslint)
-      (setq-local flycheck-javascript-eslint-executable eslint))))
+      (setq-local flycheck-javascript-eslint-executable eslint)
+      (setq-local flycheck-eslint root))))
 
 
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
   :init
-  (my/add-to-hooks 'flycheck-mode '(javascript-mode
+  (my/add-to-hooks 'flycheck-mode '(js-mode-hook
                                     emacs-lisp-mode))
-
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (add-hook 'js-mode-hook #'my/use-eslint-from-node-modules)
-  :config
-  (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers
-                                                   '(javascript-jshint))))
+  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+  (setq flycheck-disabled-checkers '(javascript-jshint))
+  (setq flycheck-checkers '(javascript-eslint)))
 
 ;; MODES
 
@@ -251,24 +242,32 @@
                                        js-mode-hook)))
 
 ;; js
-(use-package js
-  :config
-  (setq js-indent-level 2))
+(defun my/set-js-indent (&optional indent)
+  (interactive "P")
+  (let ((js-indent (if (not indent)
+                       (string-to-int (read-from-minibuffer "Set to: "))
+                       indent)))
+    (setq js-indent-level js-indent)
+    (setq js2-indent-level js-indent)
+    (setq js2-basic-offset js-indent)
+    (setq sgml-basic-offset js-indent)))
+
+(use-package js2-mode
+  :ensure t
+  :init
+  (my/set-js-indent 2)
+  :mode
+  ("\\.js?\\'" . js2-jsx-mode))
 
 
 ;; elisp
 (use-package paredit
   :ensure t
-  :config (add-hook 'paredit-mode 'emacs-lisp-mode))
+  :init (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
 
 (use-package rainbow-delimiters
   :ensure t
-  :config (add-hook 'rainbow-delimiters-mode 'emacs-lisp-mode))
-
-(use-package highlight-parentheses
-  :ensure t
-  :diminish highlight-parentheses-mode
-  :config (add-hook 'highlight-parentheses-mode 'emacs-lisp-mode))
+  :init (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
 
 ;; elixir
 (use-package elixir-mode
@@ -276,7 +275,7 @@
 
 (use-package alchemist
   :ensure t
-  :config (add-hook 'alchemist-mode 'elixir-mode))
+  :init (add-hook 'elixir-mode 'alchemist-mode))
 
 ;; rest
 (use-package markdown-mode
@@ -287,13 +286,13 @@
 ;; theme
 (use-package arjen-grey-theme
   :ensure t
-  :config
+  :init
   (load-theme 'arjen-grey t))
 
 (defun my/set-font-height (height)
   (set-face-attribute 'default nil :font "Source Code Pro" :height height))
 
-(setq my/default-font-height 145)
+(setq my/default-font-height 130)
 (setq my/live-coding-font-height 200)
 
 (my/set-font-height my/default-font-height)
@@ -306,32 +305,3 @@
         (my/set-font-height default-height)
       (my/set-font-height live-coding-height))))
 
-;; modeline
-(defun my/shorten-dir (directory)
-  "Given a DIRECTORY keep the only the last two items."
-  (let ((dirs (reverse (split-string directory "/"))))
-    (cond ((and (equal (car dirs) "")
-                (equal (cadr dirs) ""))
-           "/")
-          ((and (equal (car dirs) "")
-                (or (equal (cadr dirs) user-login-name)
-                    (equal (cadr dirs) "~")))
-           "~")
-          (t (cadr dirs)))))
-
-
-(setq mode-line-format
-      (setq-default mode-line-format
-            (list '("-"
-                    (:eval (if (buffer-modified-p) "M" "-"))
-                    (:eval (if buffer-read-only    "R" "-"))
-                    " "
-                    mode-line-buffer-identification
-                    " "
-                    mode-line-position
-                    "\tat:"
-                    (:eval (my/shorten-dir default-directory))
-                    " "
-                    vc-mode
-                    " "
-                    mode-line-modes))))
