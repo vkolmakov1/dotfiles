@@ -1,7 +1,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/dotfiles/oh-my-zsh
 
-export TERM=xterm
+export TERM=xterm-256color
 # Making emacs start server on emacsclient call
 export ALTERNATE_EDITOR=""
 
@@ -14,15 +14,19 @@ bindkey -M emacs '^N' history-substring-search-down
 # plugins
 plugins=(git npm node meteor history-substring-search)
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 source ~/dotfiles/fzf.zsh
 
 # path
-export PATH="/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/go/bin"
+export BREW_PATH="/usr/local/bin"
+export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
+
+export YARN_GLOBAL_PATH="$(yarn global bin)"
+export PATH="$YARN_GLOBAL_PATH:$PATH"
 
 # golang
-export GOROOT=/usr/local/go
-export GOPATH=~/Documents/Code/goworkspace
+export GOROOT="/usr/local/go"
+export GOPATH=~"/Documents/Code/goworkspace"
 
 # aliases
 ## brew install gls
