@@ -288,6 +288,14 @@
   :ensure t
   :mode "\\.md?\\'")
 
+(use-package auctex
+  :defer t
+  :ensure t)
+
+(use-package latex-preview-pane
+  :ensure t
+  :config (setq shell-escape-mode "-shell-escape"))
+
 ;; LOOKS
 ;; theme
 (use-package arjen-grey-theme
