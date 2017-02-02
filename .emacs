@@ -50,10 +50,16 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; better keybinds for pane splits
+;; better keybinds for pane splits and moving around
 (bind-keys*
  ("C-x -" . split-window-below)
- ("C-x |" . split-window-right))
+ ("C-x |" . split-window-right)
+ ("C-S-n" . (lambda ()
+                  (interactive)
+                  (ignore-errors (next-line 5))))
+ ("C-S-p" . (lambda ()
+                  (interactive)
+                  (ignore-errors (previous-line 5)))))
 
 ;; save buffer on biffer switch
 ;; http://stackoverflow.com/questions/1413837/emacs-auto-save-on-switch-buffer
