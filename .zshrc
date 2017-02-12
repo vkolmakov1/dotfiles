@@ -19,7 +19,8 @@ source ~/dotfiles/fzf.zsh
 
 # path
 export BREW_PATH="/usr/local/bin"
-export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
+export TEX_PATH="/Library/TeX/texbin"
+export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
 
 export YARN_GLOBAL_PATH="$(yarn global bin)"
 export PATH="$YARN_GLOBAL_PATH:$PATH"
