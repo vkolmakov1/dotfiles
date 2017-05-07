@@ -111,6 +111,12 @@
   :ensure t
   :bind* ("C-x C-b" . ibuffer))
 
+(use-package ansi-term
+  :init
+  (let ((preferred-shell "/usr/local/bin/zsh"))
+    (if (file-executable-p preferred-shell)
+        (setq explicit-shell-file-name preferred-shell))))
+
 (use-package dired+
   :ensure t
   :defer t
@@ -282,6 +288,14 @@
 (use-package alchemist
   :ensure t
   :init (add-hook 'elixir-mode 'alchemist-mode))
+
+;; haskell
+(use-package haskell-mode
+  :init (add-hook 'haskell-mode-hook #'intero-mode)
+  :ensure t)
+
+(use-package intero
+  :ensure t)
 
 ;; rest
 (use-package markdown-mode
