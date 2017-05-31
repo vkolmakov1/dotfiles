@@ -273,6 +273,10 @@
   :ensure t
   :mode ("\\.js?\\'" . rjsx-mode))
 
+;; elm
+(use-package elm-mode
+  :ensure t
+  :config (add-to-list 'company-backends 'company-elm))
 
 ;; elisp
 (use-package paredit
