@@ -267,9 +267,11 @@
 (use-package js2-mode
   :ensure t
   :init
-  (my/set-js-indent 2)
-  :mode
-  ("\\.js?\\'" . js2-jsx-mode))
+  (my/set-js-indent 2))
+
+(use-package rjsx-mode
+  :ensure t
+  :mode ("\\.js?\\'" . rjsx-mode))
 
 
 ;; elisp
