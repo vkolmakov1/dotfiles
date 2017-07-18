@@ -254,7 +254,8 @@
                                     emacs-lisp-mode))
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
   (setq flycheck-disabled-checkers '(javascript-jshint))
-  (setq flycheck-checkers '(javascript-eslint)))
+  (setq flycheck-checkers '(javascript-eslint))
+  (when (my/is-windows) (setq flycheck-xml-parser 'flycheck-parse-xml-region)))
 
 ;; MODES
 
@@ -262,7 +263,6 @@
 (use-package web-mode
   :ensure t
   :config
-  (setq-default indent-tabs-mode nil)
   (let ((default-offset 2)
         (default-padding 0))
     (setq web-mode-markup-indent-offset default-offset)
@@ -293,10 +293,17 @@
     (setq js2-basic-offset js-indent)
     (setq sgml-basic-offset js-indent)))
 
+(use-package add-node-modules-path
+  :ensure t
+  :init
+  (add-hook 'js-mode-hook #'add-node-modules-path)
+  (add-hook 'js2-mode-hook #'add-node-modules-path))
+
 (use-package js2-mode
   :ensure t
   :init
-  (my/set-js-indent 2))
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil))
 
 (use-package rjsx-mode
   :ensure t
