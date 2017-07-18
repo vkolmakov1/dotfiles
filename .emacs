@@ -98,12 +98,21 @@
               ("C-j" . ivy-immediate-done))
   :diminish ivy-mode)
 
+
+(defun my/is-windows ()
+    (memq window-system '(w32)))
+
+
 (use-package counsel
   :ensure t
+  :config
+  (when (my/is-windows)
+    (setq counsel-git-grep-cmd-default
+	  "git --no-pager grep --full-name -n --no-color -i -e \"%s\""))
   :bind*
   (("M-x" . counsel-M-x)
    ("M-y" . counsel-yank-pop)
-   ("C-c g" . counsel-ag)
+   ("C-c g" . counsel-git-grep)
    ("C-h b" . counsel-descbinds)
    ("C-h f" . counsel-describe-function)))
 
@@ -144,6 +153,7 @@
    ("M--" . er/contract-region)))
 
 (use-package avy
+  :bind ("C-o" . avy-goto-char)
   :ensure t)
 
 (use-package visual-regexp-steroids
@@ -161,7 +171,8 @@
 (use-package exec-path-from-shell
   :ensure t
   :init
-  (exec-path-from-shell-initialize))
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 (use-package multiple-cursors
   :ensure t
@@ -336,10 +347,42 @@
   :init
   (load-theme 'arjen-grey t))
 
+;; fonts
 (defun my/set-font-height (height)
-  (set-face-attribute 'default nil :font "Source Code Pro" :height height))
+  (set-face-attribute 'default nil :font "Fira Code" :height height))
 
-(setq my/default-font-height 130)
+(defconst fira-code-char-regexp-alist
+  '(
+    (33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+    (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+    (36 . ".\\(?:>\\)")
+    (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+    (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+    (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+    (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+    (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+    (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+    (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+    (48 . ".\\(?:x[a-zA-Z]\\)")
+    (58 . ".\\(?:::\\|[:=]\\)")
+    (59 . ".\\(?:;;\\|;\\)")
+    (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+    (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+    (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+    (63 . ".\\(?:\\(\\?\\?\\)\\|[=?]\\)")
+    (91 . ".\\(?:]\\)")
+    (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+    (94 . ".\\(?:=\\)")
+    (119 . ".\\(?:ww\\)")
+    (123 . ".\\(?:-\\)")
+    (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+    (126 . ".\\(?:~[>~]\\|[>=@~-]\\)")))
+
+(dolist (char-regexp fira-code-char-regexp-alist)
+  (set-char-table-range composition-function-table (car char-regexp)
+                        `([,(cdr char-regexp) 0 font-shape-gstring])))
+
+(setq my/default-font-height 120)
 (setq my/live-coding-font-height 200)
 
 (my/set-font-height my/default-font-height)
