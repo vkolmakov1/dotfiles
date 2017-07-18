@@ -1,6 +1,14 @@
 (require 'package)
+
+(defun my/is-windows ()
+    (memq window-system '(w32)))
+
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+(add-to-list 'package-archives (if (my/is-windows)
+                                   '("melpa" . "http://melpa.org/packages/")
+                                 '("melpa" . "https://melpa.org/packages/")))
+
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -45,8 +53,23 @@
               scroll-up-aggressively 0.01
               scroll-down-aggressively 0.01)
 
+(setq-default default-tab-width 8)
+(defun my/switch-to-tabs ()
+  (interactive)
+  (progn
+    (kill-local-variable 'indent-tabs-mode)
+    (setq indent-tabs-mode t)
+    (setq-default indent-tabs-mode t)))
+
+(defun my/switch-to-spaces ()
+  (interactive)
+  (progn
+    (kill-local-variable 'indent-tabs-mode)
+    (setq indent-tabs-mode nil)
+    (setq-default indent-tabs-mode nil)))
+
 ;; Use spaces by default
-(setq-default indent-tabs-mode nil)
+(my/switch-to-spaces)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -97,11 +120,6 @@
   :bind (:map ivy-minibuffer-map
               ("C-j" . ivy-immediate-done))
   :diminish ivy-mode)
-
-
-(defun my/is-windows ()
-    (memq window-system '(w32)))
-
 
 (use-package counsel
   :ensure t
