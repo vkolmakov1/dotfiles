@@ -53,7 +53,7 @@
               scroll-up-aggressively 0.01
               scroll-down-aggressively 0.01)
 
-(setq-default default-tab-width 8)
+(setq-default default-tab-width 4)
 (defun my/switch-to-tabs ()
   (interactive)
   (progn
@@ -356,6 +356,9 @@
               (lambda()
                 (add-hook 'after-save-hook 'cleanup-org-tables  nil 'make-it-local))))
   :mode "\\.md?\\'")
+
+(use-package powershell
+  :ensure t)
 
 (use-package auctex
   :defer t
