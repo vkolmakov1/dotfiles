@@ -15,6 +15,9 @@ Set-Alias gsb git-status
 function git-hist {git log --oneline --graph --decorate --all}
 Set-Alias gh git-hist
 
+function git-diff { git diff }
+Set-Alias gd git-diff
+
 ## npm
 function npm-run-start {npm run start}
 Set-Alias nrs npm-run-start
