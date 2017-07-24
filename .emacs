@@ -26,6 +26,12 @@
           (add-hook hook func))
         hooks))
 
+;; remove safe-dir assertion for magit on Windows
+(when (and (my/is-windows) (>= emacs-major-version 23))
+  (progn (require 'server)
+         (defun server-ensure-safe-dir (dir) "Noop" t)
+         (server-start)))
+
 ;;;; standard-settings
 (delete-selection-mode 1)
 (menu-bar-mode 0)
