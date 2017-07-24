@@ -263,6 +263,17 @@
   (setq flycheck-checkers '(javascript-eslint))
   (when (my/is-windows) (setq flycheck-xml-parser 'flycheck-parse-xml-region)))
 
+(use-package dumb-jump
+  :ensure t
+  :config
+  (setq dumb-jump-selector 'ivy)
+  (setq dumb-jump-force-searcher (cond ((executable-find "rg") 'rg)
+                                       ((executable-find "ag") 'ag)
+                                       (t nil)))
+  :bind*
+  (("M-." . dumb-jump-go)
+   ("C-." . dumb-jump-back)))
+
 ;; MODES
 
 ;; web
