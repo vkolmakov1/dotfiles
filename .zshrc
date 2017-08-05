@@ -1,3 +1,21 @@
+# path
+
+## homebrew
+export BREW_PATH="/usr/local/bin"
+export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
+
+## golang
+export GOROOT="/usr/local/go"
+export GOPATH=~"/Documents/Code/goworkspace"
+
+## rest
+export TEX_PATH="/Library/TeX/texbin"
+export YARN_GLOBAL_PATH="$(yarn global bin)"
+export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
+export STACK_GLOBAL_PATH="$HOME/.local/bin"
+
+export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$PATH"
+
 # Path to your oh-my-zsh installation.
 export ZSH=~/dotfiles/oh-my-zsh
 
@@ -23,24 +41,6 @@ plugins=(
 
 source "$ZSH/oh-my-zsh.sh"
 source ~/dotfiles/fzf.zsh
-
-# path
-
-## homebrew
-export BREW_PATH="/usr/local/bin"
-export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
-
-## golang
-export GOROOT="/usr/local/go"
-export GOPATH=~"/Documents/Code/goworkspace"
-
-## rest
-export TEX_PATH="/Library/TeX/texbin"
-export YARN_GLOBAL_PATH="$(yarn global bin)"
-export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
-export STACK_GLOBAL_PATH="$HOME/.local/bin"
-
-export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$PATH"
 
 # python
 export WORKON_HOME="$HOME/.virtualenvs"
