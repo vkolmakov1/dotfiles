@@ -305,8 +305,9 @@
 (use-package js2-mode
   :ensure t
   :init
-  (setq js2-mode-show-parse-errors nil)
-  (setq js2-mode-show-strict-warnings nil))
+  (setq js2-mode-show-strict-warnings nil)
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-strict-trailing-comma-warning nil))
 
 (use-package rjsx-mode
   :ensure t
