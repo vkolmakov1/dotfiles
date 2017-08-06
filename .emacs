@@ -344,6 +344,8 @@
   :ensure t)
 
 ;; rest
+(setq tramp-default-method "ssh")
+
 (use-package markdown-mode
   :ensure t
   :init (add-hook 'markdown-mode-hook #'flyspell-mode)
