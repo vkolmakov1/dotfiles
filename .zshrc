@@ -16,18 +16,11 @@ export STACK_GLOBAL_PATH="$HOME/.local/bin"
 
 export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$PATH"
 
-# Path to your oh-my-zsh installation.
+# omz
 export ZSH=~/dotfiles/oh-my-zsh
-
-export TERM=xterm-256color
-# Making emacs start server on emacsclient call
-export ALTERNATE_EDITOR=""
 
 ZSH_THEME="philips"
 COMPLETION_WAITING_DOTS="true"
-
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
 
 # plugins
 plugins=(
@@ -42,7 +35,18 @@ plugins=(
 source "$ZSH/oh-my-zsh.sh"
 source ~/dotfiles/fzf.zsh
 
-# python
+# settings/keybindings
+export TERM=xterm-256color
+export ALTERNATE_EDITOR="" # Making emacs start server on emacsclient call
+
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
+function killallmatching () {
+    ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
+}
+
+# python venv
 export WORKON_HOME="$HOME/.virtualenvs"
 
 # aliases
@@ -114,6 +118,3 @@ zstyle ':filter-select' hist-find-no-dups yes
 
 alias "gh"="git log --oneline --graph --decorate --all"
 
-function killallmatching () {
-    ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
-}
