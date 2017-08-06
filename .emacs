@@ -245,7 +245,6 @@
   :init
   (my/add-to-hooks 'flycheck-mode '(js-mode-hook
                                     emacs-lisp-mode))
-  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
   (setq flycheck-disabled-checkers '(javascript-jshint))
   (setq flycheck-checkers '(javascript-eslint))
   (when (my/is-windows) (setq flycheck-xml-parser 'flycheck-parse-xml-region)))
