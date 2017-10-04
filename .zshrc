@@ -13,8 +13,10 @@ export TEX_PATH="/Library/TeX/texbin"
 export YARN_GLOBAL_PATH="$(yarn global bin)"
 export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
 export STACK_GLOBAL_PATH="$HOME/.local/bin"
+export RUST_PATH="$HOME/.cargo/bin"
+export RUST_SRC_PATH="$HOME/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
 
-export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$PATH"
+export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$RUST_PATH:$PATH"
 
 # omz
 export ZSH=~/dotfiles/oh-my-zsh
