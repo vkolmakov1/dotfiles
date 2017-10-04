@@ -316,16 +316,16 @@
 ;; elm
 (use-package elm-mode
   :ensure t
-  :config (add-to-list 'company-backends 'company-elm))
+  :config (add-to-list 'company-backends #'company-elm))
 
 ;; elisp
 (use-package paredit
   :ensure t
-  :init (add-hook 'emacs-lisp-mode-hook 'paredit-mode))
+  :init (add-hook 'emacs-lisp-mode-hook #'paredit-mode))
 
 (use-package rainbow-delimiters
   :ensure t
-  :init (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode))
+  :init (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode))
 
 ;; elixir
 (use-package elixir-mode
@@ -333,15 +333,26 @@
 
 (use-package alchemist
   :ensure t
-  :init (add-hook 'elixir-mode 'alchemist-mode))
+  :init (add-hook 'elixir-mode #'alchemist-mode))
 
 ;; haskell
 (use-package haskell-mode
-  :init (add-hook 'haskell-mode-hook #'intero-mode)
-  :ensure t)
+  :ensure t
+  :init (add-hook 'haskell-mode-hook #'intero-mode))
 
 (use-package intero
   :ensure t)
+
+;; rust
+(use-package rust-mode
+  :ensure t)
+
+(use-package racer
+  :ensure t
+  :init
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'company-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode))
 
 ;; rest
 (setq tramp-default-method "ssh")
