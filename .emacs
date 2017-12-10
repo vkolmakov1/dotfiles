@@ -354,6 +354,19 @@
   (add-hook 'racer-mode-hook #'company-mode)
   (add-hook 'racer-mode-hook #'eldoc-mode))
 
+;; c
+(use-package irony
+  :ensure t)
+
+(use-package company-irony
+  :ensure t
+  :config
+  (add-to-list 'company-backends #'company-irony)
+  (add-hook 'c++-mode-hook #'irony-mode)
+  (add-hook 'c-mode-hook #'irony-mode)
+  (add-hook 'objc-mode-hook #'irony-mode)
+  (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
+
 ;; rest
 (setq tramp-default-method "ssh")
 
