@@ -243,7 +243,19 @@
   (use-package emmet-mode
     :ensure t
     :defer t
-    :hook (rjsx-mode . emmet-mode)))
+    :hook (rjsx-mode . emmet-mode))
+
+  (use-package tern
+    :ensure t
+    :hook (rjsx-mode . tern-mode)
+    :config
+    (setq tern-command (append tern-command '("--no-port-file"))))
+
+  (use-package company-tern
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-tern)))
+
 
 (my/setup-use-package)
 (my/set-general-settings)
