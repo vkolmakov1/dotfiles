@@ -212,6 +212,7 @@
     :mode "\\.md?\\'")
 
   (use-package flyspell
+    :defer t
     :config
     (setq ispell-program-name (executable-find "aspell"))))
 
@@ -226,18 +227,22 @@
 
   (use-package add-node-modules-path
     :ensure t
+    :defer t
     :hook (rjsx-mode . add-node-modules-path))
 
   (use-package prettier-js
     :ensure t
+    :defer t
     :hook (rjsx-mode . prettier-js-mode))
 
   (use-package flycheck
     :ensure t
+    :defer t
     :hook (rjsx-mode . flycheck-mode))
 
   (use-package emmet-mode
     :ensure t
+    :defer t
     :hook (rjsx-mode . emmet-mode)))
 
 (my/setup-use-package)
@@ -248,18 +253,3 @@
 
 (my/markdown)
 (my/javascript)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (smex prettier-js add-node-modules-path emmet-mode ws-butler use-package undo-tree rjsx-mode multiple-cursors markdown-mode magit git-gutter exec-path-from-shell dumb-jump diminish counsel company arjen-grey-theme))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
