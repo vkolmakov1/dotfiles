@@ -21,11 +21,6 @@
 (defun my/set-font-height (height)
   (set-face-attribute 'default nil :font my/font-name :height height))
 
-(defun my/add-to-hooks (func hooks)
-  (mapc (lambda (hook)
-          (add-hook hook func))
-        hooks))
-
 (defun my/toggle-live-coding ()
   (interactive)
   (let ((default-height my/default-font-height)
