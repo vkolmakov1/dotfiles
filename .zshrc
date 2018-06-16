@@ -103,7 +103,7 @@ alias py="python"
 
 # rest
 alias bower="noglob bower"
-## nig tldr
+## brew install tldr
 alias h="tldr"
 
 # ssh
