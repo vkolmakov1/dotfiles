@@ -256,6 +256,22 @@
     :config
     (add-to-list 'company-backends 'company-tern)))
 
+(defun my/elm ()
+  (use-package elm-mode
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-elm)
+    (setq elm-format-on-save t))
+
+  (use-package flycheck
+    :ensure t
+    :defer t
+    :hook (elm-mode . flycheck-mode))
+
+  (use-package flycheck-elm
+    :ensure t
+    :defer t
+    :hook (elm-mode . flycheck-elm-setup)))
 
 (my/setup-use-package)
 (my/set-general-settings)
@@ -265,3 +281,4 @@
 
 (my/markdown)
 (my/javascript)
+(my/elm)
