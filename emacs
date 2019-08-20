@@ -279,6 +279,6 @@
 (my/add-core-packages)
 (my/looks)
 
-(my/markdown)
-(my/javascript)
-(my/elm)
+;; (my/markdown)
+;; (my/javascript)
+;; (my/elm)
