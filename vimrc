@@ -7,6 +7,9 @@ Plug 'mxw/vim-jsx'
 " Auto-detect indentation
 Plug 'tpope/vim-sleuth'
 
+" Adjusts cursor when in edit mode
+Plug 'wincent/terminus'
+
 " Powerline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
