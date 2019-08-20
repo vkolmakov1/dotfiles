@@ -76,6 +76,18 @@ then
     alias la="gls --color -o -AhX --group-directories-first"
 fi
 
+if [ -x $(which bat) ]
+then
+    ## brew install bat
+    alias cat="bat"
+fi
+
+if [ -x $(which rg) ]
+then
+    ## brew install rg
+    alias grep="rg"
+fi
+
 if [ -x $(which trash) ]
 then
     ## brew install trash
