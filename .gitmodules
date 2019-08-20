@@ -7,3 +7,6 @@
 [submodule "fzf"]
 	path = fzf
 	url = https://github.com/junegunn/fzf
+[submodule "Apprentice"]
+	path = Apprentice
+	url = https://github.com/romainl/Apprentice.git

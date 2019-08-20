@@ -1,122 +1,101 @@
-# path
+export TERM=xterm-256color
 
-## homebrew
-export BREW_PATH="/usr/local/bin"
-export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
-
-## golang
+## Golang
 export GOROOT="/usr/local/go"
-export GOPATH=~"/Documents/Code/goworkspace"
+export GOPATH="$HOME/Documents/Code/goworkspace"
 
-## rest
+## Java
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
+
 export TEX_PATH="/Library/TeX/texbin"
-export YARN_GLOBAL_PATH="$(yarn global bin)"
 export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
 export STACK_GLOBAL_PATH="$HOME/.local/bin"
+
+## Python
+export WORKON_HOME="$HOME/.virtualenvs"
+
+## Rust
 export RUST_PATH="$HOME/.cargo/bin"
 export RUST_SRC_PATH="$HOME/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
 
+# Path
+export BREW_PATH="/usr/local/bin"
+export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
 export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$RUST_PATH:$PATH"
 
-# omz
-export ZSH=~/dotfiles/oh-my-zsh
+# Zsh
 
-ZSH_THEME="philips"
-COMPLETION_WAITING_DOTS="true"
+## omz
 
-# plugins
-plugins=(
-    git
-    npm
-    node
-    history-substring-search
-    jump
-    thefuck
-)
+if [ -e ~/dotfiles/oh-my-zsh ]
+then
+    export ZSH=~/dotfiles/oh-my-zsh
+    ZSH_THEME="philips"
+    COMPLETION_WAITING_DOTS="true"
 
-source "$ZSH/oh-my-zsh.sh"
-source ~/dotfiles/fzf.zsh
+    plugins=(
+        git
+        npm
+        node
+        history-substring-search
+        jump
+    )
 
-# settings/keybindings
-export TERM=xterm-256color
-export ALTERNATE_EDITOR="" # Making emacs start server on emacsclient call
+    source "$ZSH/oh-my-zsh.sh"
+fi
 
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
+## zsh-zaw - history search
 
+if [ -e ~/dotfiles/zaw/zaw.zsh ]
+then
+    source ~/dotfiles/zaw/zaw.zsh
+
+    bindkey '^R' "zaw-history"
+    zstyle ':filter-select' max-lines 10
+    zstyle ':filter-select' case-insensitive yes
+    zstyle ':filter-select' extended-search yes
+    zstyle ':filter-select' hist-find-no-dups yes
+
+    bindkey -M emacs '^P' history-substring-search-up
+    bindkey -M emacs '^N' history-substring-search-down
+fi
+
+# Aliases
+
+if [ -e ~/dotfiles/oh-my-zsh ]
+then
+    # zsh plugin
+    alias j="jump"
+    alias ms="marks"
+fi
+
+if [ -x $(which gls) ]
+then
+    ## brew install gls
+    alias ls="gls --color -hX --group-directories-first"
+    alias la="gls --color -o -AhX --group-directories-first"
+fi
+
+if [ -x $(which trash) ]
+then
+    ## brew install trash
+    alias rm="trash"
+fi
+
+## grep pipe
+alias -g Gi='| grep -i --color=always'
+
+if [ -x $(which tldr) ]
+then
+    ## brew install tldr
+    alias h="tldr"
+fi
+
+## git
+alias "gh"="git log --oneline --graph --decorate --all"
+
+## killallmatching - kills all running processes that contain a string that's passed in as a first parameter.
+## For example, run `killallmatching node` to kill all of the processes that contain `node` in their name.
 function killallmatching () {
     ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
 }
-
-# python venv
-export WORKON_HOME="$HOME/.virtualenvs"
-
-# aliases
-
-## thefuck
-eval $(thefuck --alias)
-
-## jump
-alias j="jump"
-alias ms="marks"
-
-## brew install gls
-alias ls="/usr/local/bin/gls --color -hX --group-directories-first"
-alias la="/usr/local/bin/gls --color -o -AhX --group-directories-first"
-## brew install trash
-alias rm="trash"
-##
-alias clr="clear"
-
-alias -g Gi='| grep -i --color=always'
-
-# emacs
-alias e="emacsclient -t"
-alias kill-emacs="emacsclient -e \"(kill-emacs)\""
-
-# configs
-alias zshrc="e ~/.zshrc"
-alias emacsconfig="e ~/.emacs"
-alias tmuxconf="e ~/.tmux.conf"
-
-# npm
-alias ni="npm install"
-alias nis="npm i -S "
-alias nid="npm i -D "
-alias nig="npm i -g "
-alias nrs="npm run start"
-alias nrb="npm run build"
-alias nrt="npm run test"
-alias nrd="npm run dev"
-
-# yarn
-alias ya="yarn add"
-alias yad="yarn add --dev"
-alias yrs="yarn run start"
-alias yrb="yarn run build"
-alias yrt="yarn run test"
-alias yrd="yarn run dev"
-
-# python
-alias py3="python3"
-alias py="python"
-
-# rest
-alias bower="noglob bower"
-## brew install tldr
-alias h="tldr"
-
-# ssh
-alias fourier="ssh vkolmako@fourier.cs.iit.edu"
-
-# zaw
-source ~/dotfiles/zaw/zaw.zsh
-
-bindkey '^R' "zaw-history"
-zstyle ':filter-select' max-lines 10
-zstyle ':filter-select' case-insensitive yes
-zstyle ':filter-select' extended-search yes
-zstyle ':filter-select' hist-find-no-dups yes
-
-alias "gh"="git log --oneline --graph --decorate --all"
-
