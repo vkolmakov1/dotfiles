@@ -23,6 +23,13 @@ export BREW_PATH="/usr/local/bin"
 export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
 export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$RUST_PATH:$PATH"
 
+# fzf config
+if [ -x $(which rg) ]
+then
+    ## Use ripgrep for fzf searches
+    export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+fi
+
 # Zsh
 
 ## omz
@@ -105,6 +112,10 @@ fi
 
 ## git
 alias "gh"="git log --oneline --graph --decorate --all"
+if [ -x $(which bat) ]
+then
+    alias "gd"="git diff | bat"
+fi
 
 ## killallmatching - kills all running processes that contain a string that's passed in as a first parameter.
 ## For example, run `killallmatching node` to kill all of the processes that contain `node` in their name.
