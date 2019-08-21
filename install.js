@@ -3,7 +3,7 @@ const path = require("path");
 
 const HOME_DIR = require("os").homedir();
 
-function doesFileOrSymlinkAlreadyExist(file) {
+function doesFileOrSymlinkAlreadyExistSync(file) {
   let result = false;
   // test for a regular file
 
@@ -28,7 +28,7 @@ function createSymlinkSync(from, to) {
     throw new Error(`File ${from} does not exist`);
   }
 
-  if (doesFileOrSymlinkAlreadyExist(to)) {
+  if (doesFileOrSymlinkAlreadyExistSync(to)) {
     const stats = fs.lstatSync(to);
 
     if (stats.isFile()) {
@@ -43,9 +43,20 @@ function createSymlinkSync(from, to) {
     }
   }
 
+  // ensure target directory exists
+  const targetDirectoryName = path.dirname(to);
+  if (!fs.existsSync(targetDirectoryName)) {
+    console.log(`Creating ${targetDirectoryName}`);
+    fs.mkdirSync(targetDirectoryName, { recursive: true });
+  }
+
   fs.symlinkSync(from, to);
 }
 
 createSymlinkSync(path.resolve("zshrc"), path.join(HOME_DIR, ".zshrc"));
 createSymlinkSync(path.resolve("emacs"), path.join(HOME_DIR, ".emacs"));
 createSymlinkSync(path.resolve("vimrc"), path.join(HOME_DIR, ".vimrc"));
+createSymlinkSync(
+  path.resolve("kitty.conf"),
+  path.join(HOME_DIR, ".config", "kitty", "kitty.conf")
+);
