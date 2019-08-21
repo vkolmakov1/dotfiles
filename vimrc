@@ -34,8 +34,6 @@ let g:user_emmet_settings = {
 
 call plug#end()
 
-" fzf setup
-
 " You want Vim, not vi. When Vim finds a vimrc, 'nocompatible' is set anyway.
 " We set it explicitely to make our position clear!
 set nocompatible
@@ -93,3 +91,6 @@ set belloff=all
 
 colorscheme apprentice
 
+" Keybindings
+" open file
+nnoremap <F2> :Files<CR>
