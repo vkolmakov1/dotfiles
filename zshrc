@@ -101,19 +101,17 @@ then
     alias rm="trash"
 fi
 
-## grep pipe
-alias -g Gi='| grep -i --color=always'
-
 if [ -x $(which tldr) ]
 then
     ## brew install tldr
     alias h="tldr"
 fi
 
-## git
+# git
 alias "gh"="git log --oneline --graph --decorate --all"
 if [ -x $(which bat) ]
 then
+    # piping diff through bat makes it easier to read
     alias "gd"="git diff | bat"
 fi
 
@@ -122,3 +120,10 @@ fi
 function killallmatching () {
     ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
 }
+
+
+# grep pipe
+alias Gi="| grep -i --color=always"
+
+# tmux shortcut -- always attach to the same session called `main`
+alias tm="tmux new-session -A -s main"
