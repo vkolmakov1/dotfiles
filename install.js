@@ -2,6 +2,19 @@ const fs = require("fs");
 const path = require("path");
 
 const HOME_DIR = require("os").homedir();
+const COLOR = {
+  CYAN: "\x1b[36m",
+  YELLOW: "\x1b[33m",
+  RESET: "\x1b[0m"
+};
+
+function cyan(s) {
+  return COLOR.CYAN + s + COLOR.RESET;
+}
+
+function yellow(s) {
+  return COLOR.YELLOW + s + COLOR.RESET;
+}
 
 function doesFileOrSymlinkAlreadyExistSync(file) {
   let result = false;
@@ -33,12 +46,12 @@ function createSymlinkSync(from, to) {
 
     if (stats.isFile()) {
       // file exists and not a symlink, make a copy.
-      console.log(`File ${to} already exists, making a copy`);
+      console.log(`File ${yellow(to)} already exists, making a copy`);
       fs.copyFileSync(to, `${to}.backup`);
     }
 
     if (stats.isFile() || stats.isSymbolicLink()) {
-      console.log(`Unlinking existing ${to}`);
+      console.log(`Unlinking existing ${yellow(to)}`);
       fs.unlinkSync(to);
     }
   }
@@ -46,10 +59,11 @@ function createSymlinkSync(from, to) {
   // ensure target directory exists
   const targetDirectoryName = path.dirname(to);
   if (!fs.existsSync(targetDirectoryName)) {
-    console.log(`Creating ${targetDirectoryName}`);
+    console.log(`Creating ${cyan(targetDirectoryName)}`);
     fs.mkdirSync(targetDirectoryName, { recursive: true });
   }
 
+  console.log(`Creating a symlink ${cyan(to)} -> ${cyan(from)}`);
   fs.symlinkSync(from, to);
 }
 
@@ -67,4 +81,3 @@ createSymlinkSync(
   path.resolve("alacritty.yml"),
   path.join(HOME_DIR, ".config", "alacritty", "alacritty.yml")
 );
-
