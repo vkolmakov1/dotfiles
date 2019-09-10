@@ -1,10 +1,13 @@
 const fs = require("fs");
 const path = require("path");
+const https = require("https");
 
 const HOME_DIR = require("os").homedir();
 const COLOR = {
   CYAN: "\x1b[36m",
   YELLOW: "\x1b[33m",
+  GREEN: "\x1b[32m",
+  BOLD: "\x1b[1m",
   RESET: "\x1b[0m"
 };
 
@@ -14,6 +17,14 @@ function cyan(s) {
 
 function yellow(s) {
   return COLOR.YELLOW + s + COLOR.RESET;
+}
+
+function green(s) {
+  return COLOR.GREEN + s + COLOR.RESET;
+}
+
+function bold(s) {
+  return COLOR.BOLD + s + COLOR.RESET;
 }
 
 function doesFileOrSymlinkAlreadyExistSync(file) {
@@ -34,6 +45,13 @@ function doesFileOrSymlinkAlreadyExistSync(file) {
   }
 
   return result;
+}
+
+function ensureDirectorySync(directoryName) {
+  if (!fs.existsSync(directoryName)) {
+    console.log(`Creating ${cyan(directoryName)}`);
+    fs.mkdirSync(directoryName, { recursive: true });
+  }
 }
 
 function createSymlinkSync(from, to) {
@@ -58,26 +76,87 @@ function createSymlinkSync(from, to) {
 
   // ensure target directory exists
   const targetDirectoryName = path.dirname(to);
-  if (!fs.existsSync(targetDirectoryName)) {
-    console.log(`Creating ${cyan(targetDirectoryName)}`);
-    fs.mkdirSync(targetDirectoryName, { recursive: true });
-  }
+  ensureDirectorySync(targetDirectoryName);
 
   console.log(`Creating a symlink ${cyan(to)} -> ${cyan(from)}`);
   fs.symlinkSync(from, to);
 }
 
-createSymlinkSync(path.resolve("zshrc"), path.join(HOME_DIR, ".zshrc"));
-createSymlinkSync(path.resolve("emacs"), path.join(HOME_DIR, ".emacs"));
-createSymlinkSync(path.resolve("vimrc"), path.join(HOME_DIR, ".vimrc"));
-createSymlinkSync(path.resolve("tmux.conf"), path.join(HOME_DIR, ".tmux.conf"));
+function httpGetToFile(url, destinationFilePath) {
+  return new Promise((resolve, reject) => {
+    if (fs.existsSync(destinationFilePath)) {
+      console.log(
+        `File ${yellow(
+          destinationFilePath
+        )} already exists, skipping the download from ${cyan(url)}`
+      );
+      resolve();
+    } else {
+      const targetDirectoryName = path.dirname(destinationFilePath);
+      ensureDirectorySync(targetDirectoryName);
+      const fileInputStream = fs.createWriteStream(destinationFilePath);
 
-createSymlinkSync(
-  path.resolve("kitty.conf"),
-  path.join(HOME_DIR, ".config", "kitty", "kitty.conf")
-);
+      console.log(
+        `Downloading ${cyan(url)} into ${yellow(destinationFilePath)}...`
+      );
+      https
+        .get(url, response => {
+          response.pipe(fileInputStream);
+          fileInputStream.on("finish", () => {
+            fileInputStream.close();
+            resolve();
+          });
+        })
+        .on("error", error => {
+          // clean up
+          fs.unlink(destinationFilePath);
+          reject(error);
+        });
+    }
+  });
+}
 
-createSymlinkSync(
-  path.resolve("alacritty.yml"),
-  path.join(HOME_DIR, ".config", "alacritty", "alacritty.yml")
-);
+function createSymlinksForDotfiles() {
+  createSymlinkSync(path.resolve("zshrc"), path.join(HOME_DIR, ".zshrc"));
+  createSymlinkSync(path.resolve("emacs"), path.join(HOME_DIR, ".emacs"));
+  createSymlinkSync(path.resolve("vimrc"), path.join(HOME_DIR, ".vimrc"));
+  createSymlinkSync(
+    path.resolve("tmux.conf"),
+    path.join(HOME_DIR, ".tmux.conf")
+  );
+
+  // TODO: fix an issue with .config not existing
+  createSymlinkSync(
+    path.resolve("kitty.conf"),
+    path.join(HOME_DIR, ".config", "kitty", "kitty.conf")
+  );
+
+  createSymlinkSync(
+    path.resolve("alacritty.yml"),
+    path.join(HOME_DIR, ".config", "alacritty", "alacritty.yml")
+  );
+}
+
+function section(title) {
+  return bold(`\n/* ${title} */\n`);
+}
+
+async function main() {
+  console.log(section("Creating symlinks for the dotfiles"));
+  createSymlinksForDotfiles();
+
+  // TODO: clone submodules if not present
+
+  console.log(section("Installing plug.vim"));
+  await httpGetToFile(
+    "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim",
+    path.join(HOME_DIR, ".vim", "autoload", "plug.vim")
+  );
+}
+
+main()
+  .then(() => console.log(bold(green("\nDone\n"))))
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
