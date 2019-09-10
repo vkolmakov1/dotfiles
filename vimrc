@@ -73,16 +73,10 @@ else
   let &listchars = 'tab:> ,extends:>,precedes:<,nbsp:.'
 endif
 
-" Put all temporary files under the same directory.
-" https://github.com/mhinz/vim-galore#handling-backup-swap-undo-and-viminfo-files
-set backup
-set backupdir   =$HOME/.vim/files/backup/
-set backupext   =-vimbackup
-set backupskip  =
-set directory   =$HOME/.vim/files/swap/
-set updatecount =100
-set undofile
-set undodir     =$HOME/.vim/files/undo/
+" Disable backup/swap/undo files
+set nobackup
+set noswapfile
+set noundofile
 set viminfo     ='100,n$HOME/.vim/files/info/viminfo
 
 set clipboard=unnamed " Use system clipboard
