@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
+const { exec } = require("child_process");
 
 const HOME_DIR = require("os").homedir();
 const COLOR = {
@@ -52,6 +53,18 @@ function ensureDirectorySync(directoryName) {
     console.log(`Creating ${cyan(directoryName)}`);
     fs.mkdirSync(directoryName, { recursive: true });
   }
+}
+
+function runCommand(command) {
+  return new Promise((resolve, reject) => {
+    console.log(`Running ${cyan(command)}`);
+    exec(command, (err, stdout, stderr) => {
+      if (err) {
+        return reject(stderr);
+      }
+      resolve(stdout);
+    });
+  });
 }
 
 function createSymlinkSync(from, to) {
@@ -116,6 +129,22 @@ function httpGetToFile(url, destinationFilePath) {
   });
 }
 
+function copyFile(src, dest) {
+  const targetDirectoryName = path.dirname(dest);
+  ensureDirectorySync(targetDirectoryName);
+
+  return new Promise((resolve, reject) => {
+    console.log(`Copying ${cyan(src)} to ${cyan(dest)}`);
+    fs.copyFile(src, dest, error => {
+      if (error) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
+
 function createSymlinksForDotfiles() {
   createSymlinkSync(path.resolve("zshrc"), path.join(HOME_DIR, ".zshrc"));
   createSymlinkSync(path.resolve("emacs"), path.join(HOME_DIR, ".emacs"));
@@ -138,19 +167,26 @@ function createSymlinksForDotfiles() {
 }
 
 function section(title) {
-  return bold(`\n/* ${title} */\n`);
+  console.log(bold(`\n/* ${title} */\n`));
 }
 
 async function main() {
-  console.log(section("Creating symlinks for the dotfiles"));
+  section("Cloning submodules");
+  console.log(await runCommand("git submodule update --init --recursive"));
+
+  section("Creating symlinks for the dotfiles");
   createSymlinksForDotfiles();
 
-  // TODO: clone submodules if not present
-
-  console.log(section("Installing plug.vim"));
+  section("Installing plug.vim");
   await httpGetToFile(
     "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim",
     path.join(HOME_DIR, ".vim", "autoload", "plug.vim")
+  );
+
+  section("Installing vim color theme");
+  await copyFile(
+    path.resolve(".", "Apprentice", "colors", "apprentice.vim"),
+    path.join(HOME_DIR, ".vim", "colors", "apprentice.vim")
   );
 }
 
