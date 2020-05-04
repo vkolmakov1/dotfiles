@@ -16,8 +16,8 @@ Plug 'vim-airline/vim-airline-themes'
 let g:airline_powerline_fonts = 1
 
 " fzf
-Plug 'junegunn/fzf.vim'
-set rtp+=/usr/local/opt/fzf
+" Plug 'junegunn/fzf.vim'
+" set rtp+=/usr/local/opt/fzf
 
 " git
 Plug 'tpope/vim-fugitive'

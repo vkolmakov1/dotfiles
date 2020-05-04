@@ -1,30 +1,38 @@
 export TERM=xterm-256color
 
-## Golang
-export GOROOT="/usr/local/go"
-export GOPATH="$HOME/Documents/Code/goworkspace"
+# PATH
+if [[ "$(uname 2> /dev/null)" = "Linux" ]]; then
+    # Nothing here yet
+fi
 
-## Java
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
+if [[ "$(uname 2> /dev/null)" = "Darwin" ]]; then
+    ## Golang
+    export GOROOT="/usr/local/go"
+    export GOPATH="$HOME/Documents/Code/goworkspace"
 
-export TEX_PATH="/Library/TeX/texbin"
-export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
-export STACK_GLOBAL_PATH="$HOME/.local/bin"
+    ## Java
+    export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
 
-## Python
-export WORKON_HOME="$HOME/.virtualenvs"
+    export TEX_PATH="/Library/TeX/texbin"
+    export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
+    export STACK_GLOBAL_PATH="$HOME/.local/bin"
 
-## Rust
-export RUST_PATH="$HOME/.cargo/bin"
-export RUST_SRC_PATH="$HOME/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
+    ## Python
+    export WORKON_HOME="$HOME/.virtualenvs"
 
-# Path
-export BREW_PATH="/usr/local/bin"
-export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
-export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$RUST_PATH:$PATH"
+    ## Rust
+    export RUST_PATH="$HOME/.cargo/bin"
+    export RUST_SRC_PATH="$HOME/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
+
+    # Path
+    export BREW_PATH="/usr/local/bin"
+    export PATH="$BREW_PATH:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:$TEX_PATH"
+    export PATH="$YARN_GLOBAL_PATH:$TEX_PATH:$STACK_GHC_BIN_PATH:$STACK_GLOBAL_PATH:$GOPATH:$RUST_PATH:$PATH"
+fi
+
 
 # fzf config
-if [ -x $(which rg) ]
+if [[ -x $(which rg) ]]
 then
     ## Use ripgrep for fzf searches
     export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
@@ -34,7 +42,7 @@ fi
 
 ## omz
 
-if [ -e ~/dotfiles/oh-my-zsh ]
+if [[ -e ~/dotfiles/oh-my-zsh ]]
 then
     export ZSH=~/dotfiles/oh-my-zsh
     ZSH_THEME="philips"
@@ -53,7 +61,7 @@ fi
 
 ## zsh-zaw - history search
 
-if [ -e ~/dotfiles/zaw/zaw.zsh ]
+if [[ -e ~/dotfiles/zaw/zaw.zsh ]]
 then
     source ~/dotfiles/zaw/zaw.zsh
 
@@ -69,39 +77,46 @@ fi
 
 # Aliases
 
-if [ -e ~/dotfiles/oh-my-zsh ]
+if [[ -e ~/dotfiles/oh-my-zsh ]]
 then
     # zsh plugin
     alias j="jump"
     alias ms="marks"
 fi
 
-if [ -x $(which gls) ]
+if [[ -x $(which gls) ]]
 then
     ## brew install gls
     alias ls="gls --color -hX --group-directories-first"
     alias la="gls --color -o -AhX --group-directories-first"
 fi
 
-if [ -x $(which bat) ]
+# bat - https://github.com/sharkdp/bat
+if [[ -x $(which bat) ]]
 then
     ## brew install bat
     alias cat="bat"
 fi
+if [[ -x $(which batcat) ]]
+then
+    # On Linux, bat is called batcat
+    ## apt-get install bat
+    alias cat="batcat"
+fi
 
-if [ -x $(which rg) ]
+if [[ -x $(which rg) ]]
 then
     ## brew install rg
     alias grep="rg"
 fi
 
-if [ -x $(which trash) ]
+if [[ -x $(which trash) ]]
 then
     ## brew install trash
     alias rm="trash"
 fi
 
-if [ -x $(which tldr) ]
+if [[ -x $(which tldr) ]]
 then
     ## brew install tldr
     alias h="tldr"
@@ -109,11 +124,7 @@ fi
 
 # git
 alias "gh"="git log --oneline --graph --decorate --all"
-if [ -x $(which bat) ]
-then
-    # piping diff through bat makes it easier to read
-    alias "gd"="git diff | bat"
-fi
+alias "gd"="git diff | cat" # if bat is installed, it makes the diffs easier to read
 
 ## killallmatching - kills all running processes that contain a string that's passed in as a first parameter.
 ## For example, run `killallmatching node` to kill all of the processes that contain `node` in their name.

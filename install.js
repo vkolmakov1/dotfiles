@@ -1,3 +1,5 @@
+//@ts-check
+
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
@@ -137,7 +139,7 @@ function copyFile(src, dest) {
     console.log(`Copying ${cyan(src)} to ${cyan(dest)}`);
     fs.copyFile(src, dest, error => {
       if (error) {
-        reject(err);
+        reject(error);
       }
 
       resolve();
@@ -154,15 +156,10 @@ function createSymlinksForDotfiles() {
     path.join(HOME_DIR, ".tmux.conf")
   );
 
-  // TODO: fix an issue with .config not existing
+  ensureDirectorySync(path.join(HOME_DIR, ".config", "kitty"))
   createSymlinkSync(
     path.resolve("kitty.conf"),
     path.join(HOME_DIR, ".config", "kitty", "kitty.conf")
-  );
-
-  createSymlinkSync(
-    path.resolve("alacritty.yml"),
-    path.join(HOME_DIR, ".config", "alacritty", "alacritty.yml")
   );
 }
 
@@ -171,6 +168,10 @@ function section(title) {
 }
 
 async function main() {
+  // TODO: ensure brew/package manager is installed
+
+  // TODO: install all required packages
+
   section("Cloning submodules");
   console.log(await runCommand("git submodule update --init --recursive"));
 
@@ -188,6 +189,10 @@ async function main() {
     path.resolve(".", "Apprentice", "colors", "apprentice.vim"),
     path.join(HOME_DIR, ".vim", "colors", "apprentice.vim")
   );
+
+  // TODO: make sure vim is installed and run
+  // `vim +PlugInstall +qall > /dev/null` to
+  // install all plugins
 }
 
 main()
