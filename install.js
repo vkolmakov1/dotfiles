@@ -148,11 +148,11 @@ function copyFile(src, dest) {
 }
 
 function createSymlinksForDotfiles() {
-  createSymlinkSync(path.resolve("zshrc"), path.join(HOME_DIR, ".zshrc"));
-  createSymlinkSync(path.resolve("emacs"), path.join(HOME_DIR, ".emacs"));
-  createSymlinkSync(path.resolve("vimrc"), path.join(HOME_DIR, ".vimrc"));
+  createSymlinkSync(path.resolve(".zshrc"), path.join(HOME_DIR, ".zshrc"));
+  createSymlinkSync(path.resolve(".emacs"), path.join(HOME_DIR, ".emacs"));
+  createSymlinkSync(path.resolve(".vimrc"), path.join(HOME_DIR, ".vimrc"));
   createSymlinkSync(
-    path.resolve("tmux.conf"),
+    path.resolve(".tmux.conf"),
     path.join(HOME_DIR, ".tmux.conf")
   );
 
