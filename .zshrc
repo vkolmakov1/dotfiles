@@ -1,5 +1,3 @@
-export TERM=xterm-256color
-
 # PATH
 if [[ "$(uname 2> /dev/null)" = "Linux" ]]; then
     # Nothing here yet
@@ -138,3 +136,6 @@ alias Gi="| grep -i --color=always"
 
 # tmux shortcut -- always attach to the same session called `main`
 alias tm="tmux new-session -A -s main"
+
+# drop into a tmux session by default
+tm
