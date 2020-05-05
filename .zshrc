@@ -118,6 +118,8 @@ if [[ -x $(which tldr) ]]
 then
     ## brew install tldr
     alias h="tldr"
+else
+    alias h="man"
 fi
 
 # git
@@ -130,12 +132,11 @@ function killallmatching () {
     ps aux | grep -i "$1" | awk '{print $2}' | xargs kill -9
 }
 
-
-# grep pipe
-alias Gi="| grep -i --color=always"
-
 # tmux shortcut -- always attach to the same session called `main`
 alias tm="tmux new-session -A -s main"
 
-# drop into a tmux session by default
-tm
+if [[ -z "$TMUX" ]]
+then
+    # Not in tmux - start a session / attach to an existing session
+    tm
+fi
