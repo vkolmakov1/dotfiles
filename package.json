@@ -1,0 +1,23 @@
+{
+  "name": "dotfiles",
+  "version": "1.0.0",
+  "description": "My dotfiles for emacs, zsh and tmux",
+  "main": "install.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vkolmakov/dotfiles.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vkolmakov/dotfiles/issues"
+  },
+  "homepage": "https://github.com/vkolmakov/dotfiles#readme",
+  "dependencies": {
+    "sudo-prompt": "^9.2.1"
+  }
+}

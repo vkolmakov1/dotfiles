@@ -4,6 +4,124 @@ const fs = require("fs");
 const path = require("path");
 const https = require("https");
 const { exec } = require("child_process");
+const sudo = require("sudo-prompt");
+
+const OS = {
+  OSX: "OSX",
+  LINUX: "LINUX",
+};
+
+const PACKAGE_MANAGER = {
+  APT: (packageName) => ({
+    install() {
+      return runCommand(`apt-get install -y ${packageName}`, { shouldLog: false, sudo: true });
+    },
+    shouldInstall() {
+      return runCommand(`apt list ${packageName}`, { shouldLog: false, sudo: false })
+        .then(output => !output.toLowerCase().includes("[installed]"));
+    },
+  }),
+  HOMEBREW: (packageName) => ({
+    install() {
+      // TODO
+    },
+    shouldInstall() {
+      // TODO
+    }
+  }),
+  NPM: (packageName) => ({
+    install() {
+      return runCommand(`npm install -g ${packageName}`, { shouldLog: false, sudo: true });
+    },
+    shouldInstall() {
+      return runCommand("npm list -g --depth=0", { shouldLog: false, sudo: false })
+        .then((output) => !output.includes(packageName));
+    }
+  }),
+  SKIP: (_packageName) => ({
+    install() {
+      return Promise.reject("This should never be called");
+    },
+    shouldInstall() {
+      return Promise.resolve(false);
+    }
+  })
+}
+
+const REQUIRED_PACKAGES = [
+  {
+    name: "zsh",
+    url: "https://www.zsh.org",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("zsh"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "tmux",
+    url: "https://github.com/tmux/tmux",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("tmux"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "vim",
+    url: "https://github.com/vim/vim",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("vim"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "tldr",
+    url: "https://github.com/tldr-pages/tldr",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.NPM("tldr"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "bat",
+    url: "https://github.com/sharkdp/bat",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("bat"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "ripgrep",
+    url: "https://github.com/BurntSushi/ripgrep",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("ripgrep"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "osx coreutils",
+    url: "https://www.gnu.org/software/coreutils",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP(),
+      [OS.OSX]: PACKAGE_MANAGER.HOMEBREW("coreutils"),
+    }
+  },
+  {
+    name: "kitty terminal",
+    url: "https://github.com/kovidgoyal/kitty",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("kitty"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+  {
+    name: "Fira Code font",
+    url: "https://github.com/tonsky/FiraCode",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.APT("fonts-firacode"),
+      [OS.OSX]: {} // TODO
+    }
+  },
+];
 
 const HOME_DIR = require("os").homedir();
 const COLOR = {
@@ -11,6 +129,7 @@ const COLOR = {
   YELLOW: "\x1b[33m",
   GREEN: "\x1b[32m",
   BOLD: "\x1b[1m",
+  RED: "",
   RESET: "\x1b[0m"
 };
 
@@ -28,6 +147,10 @@ function green(s) {
 
 function bold(s) {
   return COLOR.BOLD + s + COLOR.RESET;
+}
+
+function red(s) {
+  return COLOR.RED + s + COLOR.RESET;
 }
 
 function doesFileOrSymlinkAlreadyExistSync(file) {
@@ -57,15 +180,26 @@ function ensureDirectorySync(directoryName) {
   }
 }
 
-function runCommand(command) {
+function runCommand(command, options = { shouldLog: true, sudo: false }) {
   return new Promise((resolve, reject) => {
-    console.log(`Running ${cyan(command)}`);
-    exec(command, (err, stdout, stderr) => {
-      if (err) {
-        return reject(stderr);
-      }
-      resolve(stdout);
-    });
+    if (options.shouldLog) {
+      console.log(`Running ${cyan(command)}`);
+    }
+    if (options.sudo) {
+      sudo.exec(command, { name: "install script" }, (err, stdout, stderr) => {
+        if (err || stderr) {
+          return reject(err || stderr);
+        }
+        resolve(stdout);
+      });
+    } else {
+      exec(command, (err, stdout, stderr) => {
+        if (err) {
+          return reject(stderr);
+        }
+        resolve(stdout);
+      });
+    }
   });
 }
 
@@ -124,8 +258,12 @@ function httpGetToFile(url, destinationFilePath) {
         })
         .on("error", error => {
           // clean up
-          fs.unlink(destinationFilePath);
-          reject(error);
+          fs.unlink(destinationFilePath, (unlinkError) => {
+            if (unlinkError) {
+              console.error(red(`Failed to unlink file ${destinationFilePath} after downloading it.`));
+            }
+            reject(error);
+          });
         });
     }
   });
@@ -168,12 +306,27 @@ function section(title) {
 }
 
 async function main() {
-  // TODO: ensure brew/package manager is installed
+  const os = OS.LINUX;
 
-  // TODO: install all required packages
+  if (process.platform === "darwin") {
+    // TODO: ensure homebrew is installed
+  }
+
+  section("Installing required packages");
+  for (let package of REQUIRED_PACKAGES) {
+    if (await package.install[os].shouldInstall()) {
+      console.log(`Installing package ${cyan(package.name)} (${bold(package.url)})...`);
+      await package.install[os].install();
+    } else {
+      console.log(`Package ${cyan(package.name)} (${bold(package.url)}) is already installed`);
+    }
+  }
 
   section("Cloning submodules");
-  console.log(await runCommand("git submodule update --init --recursive"));
+  const submodulesCommandOutput = await runCommand("git submodule update --init --recursive");
+  if (submodulesCommandOutput) {
+    console.log(submodulesCommandOutput);
+  }
 
   section("Creating symlinks for the dotfiles");
   createSymlinksForDotfiles();
@@ -190,9 +343,13 @@ async function main() {
     path.join(HOME_DIR, ".vim", "colors", "apprentice.vim")
   );
 
-  // TODO: make sure vim is installed and run
-  // `vim +PlugInstall +qall > /dev/null` to
-  // install all plugins
+  section("Installing vim plugins");
+  await runCommand("vim +PlugInstall +qall > /dev/null");
+
+  section("Changing default shell to zsh");
+  const zshPath = await runCommand("which zsh", { sudo: false, shouldLog: false });
+  // TODO: this requires password, ask for it
+  await runCommand(`chsh -s ${zshPath.trim()} ${process.env["USER"]}`)
 }
 
 main()
