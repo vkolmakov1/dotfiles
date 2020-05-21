@@ -346,10 +346,10 @@ async function main() {
   section("Installing vim plugins");
   await runCommand("vim +PlugInstall +qall > /dev/null");
 
-  section("Changing default shell to zsh");
-  const zshPath = await runCommand("which zsh", { sudo: false, shouldLog: false });
-  // TODO: this requires password, ask for it
-  await runCommand(`chsh -s ${zshPath.trim()} ${process.env["USER"]}`)
+  // TODO: fixme
+  // section("Changing default shell to zsh");
+  // const zshPath = await runCommand("which zsh", { sudo: false, shouldLog: false });
+  // await runCommand(`chsh -s ${zshPath.trim()} ${process.env["USER"]}`)
 }
 
 main()
