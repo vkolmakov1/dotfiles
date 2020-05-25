@@ -171,6 +171,14 @@ const REQUIRED_PACKAGES = [
       [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("visual-studio-code")
     }
   },
+  {
+    name: "licecap",
+    url: "https://www.cockos.com/licecap",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("licecap")
+    }
+  },
 ];
 
 const HOME_DIR = require("os").homedir();
