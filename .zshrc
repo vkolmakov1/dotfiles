@@ -1,3 +1,5 @@
+export VKOLMAKOV_DOTFILES_DIR="$(dirname $(readlink $HOME/.zshrc))"
+
 # PATH
 if [[ "$(uname 2> /dev/null)" = "Linux" ]]; then
     # Nothing here yet
@@ -40,9 +42,9 @@ fi
 
 ## omz
 
-if [[ -e ~/dotfiles/oh-my-zsh ]]
+if [[ -e "$VKOLMAKOV_DOTFILES_DIR/oh-my-zsh" ]]
 then
-    export ZSH=~/dotfiles/oh-my-zsh
+    export ZSH="$VKOLMAKOV_DOTFILES_DIR/oh-my-zsh"
     ZSH_THEME="philips"
     COMPLETION_WAITING_DOTS="true"
 
@@ -54,14 +56,17 @@ then
         jump
     )
 
+    # https://github.com/ohmyzsh/ohmyzsh/issues/6835
+    export ZSH_DISABLE_COMPFIX=true
+
     source "$ZSH/oh-my-zsh.sh"
 fi
 
 ## zsh-zaw - history search
 
-if [[ -e ~/dotfiles/zaw/zaw.zsh ]]
+if [[ -e "$VKOLMAKOV_DOTFILES_DIR/zaw/zaw.zsh" ]]
 then
-    source ~/dotfiles/zaw/zaw.zsh
+    source "$VKOLMAKOV_DOTFILES_DIR/zaw/zaw.zsh"
 
     bindkey '^R' "zaw-history"
     zstyle ':filter-select' max-lines 10
@@ -75,7 +80,7 @@ fi
 
 # Aliases
 
-if [[ -e ~/dotfiles/oh-my-zsh ]]
+if [[ -e "$VKOLMAKOV_DOTFILES_DIR/oh-my-zsh" ]]
 then
     # zsh plugin
     alias j="jump"
