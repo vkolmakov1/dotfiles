@@ -51,7 +51,15 @@ const PACKAGE_MANAGER = {
   }),
   NPM: (packageName) => ({
     install() {
-      return runCommand(`npm install -g ${packageName}`, { shouldLog: false, sudo: true });
+      return runCommand(`npm install -g ${packageName}`, { shouldLog: false, sudo: true })
+        .catch(err => {
+          if (typeof err === "string" /* err is stderr output */ && !err.includes("ERR")) {
+            // not a real error, probably failed with some warnings but still installed
+            return Promise.resolve();
+          }
+          // could be a real error if it includes ERR substring
+          return Promise.reject(err);
+        })
     },
     shouldInstall() {
       return runCommand("npm list -g --depth=0", { shouldLog: false, sudo: false })
@@ -74,7 +82,7 @@ const REQUIRED_PACKAGES = [
     url: "https://www.zsh.org",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("zsh"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW("zsh")
     }
   },
   {
@@ -82,7 +90,7 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/tmux/tmux",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("tmux"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW("tmux")
     }
   },
   {
@@ -90,7 +98,7 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/vim/vim",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("vim"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW("vim")
     }
   },
   {
@@ -98,7 +106,7 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/tldr-pages/tldr",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.NPM("tldr"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.NPM("tldr")
     }
   },
   {
@@ -106,7 +114,7 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/sharkdp/bat",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("bat"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW("bat")
     }
   },
   {
@@ -114,15 +122,15 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/BurntSushi/ripgrep",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("ripgrep"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW("ripgrep")
     }
   },
   {
     name: "osx coreutils",
     url: "https://www.gnu.org/software/coreutils",
     install: {
-      [OS.LINUX]: PACKAGE_MANAGER.SKIP(),
-      [OS.OSX]: PACKAGE_MANAGER.HOMEBREW("coreutils"),
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("coreutils"),
     }
   },
   {
@@ -130,7 +138,7 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/kovidgoyal/kitty",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("kitty"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("kitty")
     }
   },
   {
@@ -138,9 +146,12 @@ const REQUIRED_PACKAGES = [
     url: "https://github.com/tonsky/FiraCode",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("fonts-firacode"),
-      [OS.OSX]: {} // TODO
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("font-fira-code")
     }
   },
+  // TODO: install trash
+  // TODO: install spectacle
+  // TODO: install vscode
 ];
 
 const HOME_DIR = require("os").homedir();
@@ -325,6 +336,14 @@ function section(title) {
   console.log(bold(`\n/* ${title} */\n`));
 }
 
+async function longRunningOperation(message, operation) {
+  process.stdout.write(`${message}...`);
+  await operation();
+  process.stdout.write(green("OK\n"));
+
+  return Promise.resolve();
+}
+
 async function main() {
   let os;
   if (process.platform === "darwin") {
@@ -334,18 +353,15 @@ async function main() {
   } else {
     return Promise.reject(`Error: platform ${cyan(process.platform)} is not supported`);
   }
-
-  console.log(await runCommand(`brew ls --versions node`));
-
   if (process.platform === "darwin") {
     section("OSX pre-setup");
-    console.log(`Checking if ${cyan("homebrew")} is installed (${bold("https://brew.sh")})`)
-    const brewExecutable = await runCommand("which brew", { sudo: false, shouldLog: false });
-    if (!brewExecutable) {
-      console.log("Cannot find homebrew executable. Installing homebrew");
-      await runCommand(`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`);
-    }
-
+    await longRunningOperation(`Checking if ${cyan("homebrew")} is installed (${bold("https://brew.sh")})`, async () => {
+      const brewExecutable = await runCommand("which brew", { sudo: false, shouldLog: false });
+      if (!brewExecutable) {
+        console.log("Cannot find homebrew executable. Installing homebrew");
+        await runCommand(`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`);
+      }
+    });
     // Set up cask-fonts tap - required for fira-code font to be installed
     const BREW_FONTS_TAP_NAME = "homebrew/cask-fonts";
     const availableBrewTaps = await runCommand("brew tap", {shouldLog: false, sudo: false});
@@ -357,8 +373,9 @@ async function main() {
   section("Installing required packages");
   for (let package of REQUIRED_PACKAGES) {
     if (await package.install[os].shouldInstall()) {
-      console.log(`Installing package ${cyan(package.name)} (${bold(package.url)})...`);
-      await package.install[os].install();
+      await longRunningOperation(`Installing package ${cyan(package.name)} (${bold(package.url)})`, () => {
+        return package.install[os].install();
+      });
     } else {
       console.log(`Package ${cyan(package.name)} (${bold(package.url)}) is already installed`);
     }
@@ -387,7 +404,6 @@ async function main() {
 
   section("Installing vim plugins");
   await runCommand("vim +PlugInstall +qall > /dev/null");
-
   // TODO: fixme
   // section("Changing default shell to zsh");
   // const zshPath = await runCommand("which zsh", { sudo: false, shouldLog: false });
