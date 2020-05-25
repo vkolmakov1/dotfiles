@@ -21,12 +21,32 @@ const PACKAGE_MANAGER = {
         .then(output => !output.toLowerCase().includes("[installed]"));
     },
   }),
-  HOMEBREW: (packageName) => ({
+  BREW: (packageName) => ({
     install() {
-      // TODO
+      return runCommand(`brew install ${packageName}`, { shouldLog: false, sudo: false });
     },
     shouldInstall() {
-      // TODO
+      return runCommand(`brew ls --versions ${packageName}`, { shouldLog: false, sudo: false })
+        .then(output => !output) // if command succeeds and something is returned, it's already installed
+        .catch(_err => {
+          // if this command returns with an error, package was not found
+          return true;
+        })
+      
+    }
+  }),
+  BREW_CASK: (packageName) => ({
+    install() {
+      return runCommand(`brew cask install ${packageName}`, { shouldLog: false, sudo: false });
+    },
+    shouldInstall() {
+      return runCommand(`brew cask ls --versions ${packageName}`, { shouldLog: false, sudo: false })
+        .then(output => !output) // if command succeeds and something is returned, it's already installed
+        .catch(_err => {
+          // if this command returns with an error, package was not found
+          return true;
+        })
+      
     }
   }),
   NPM: (packageName) => ({
@@ -38,14 +58,14 @@ const PACKAGE_MANAGER = {
         .then((output) => !output.includes(packageName));
     }
   }),
-  SKIP: (_packageName) => ({
+  SKIP: {
     install() {
       return Promise.reject("This should never be called");
     },
     shouldInstall() {
       return Promise.resolve(false);
     }
-  })
+  }
 }
 
 const REQUIRED_PACKAGES = [
@@ -195,7 +215,7 @@ function runCommand(command, options = { shouldLog: true, sudo: false }) {
     } else {
       exec(command, (err, stdout, stderr) => {
         if (err) {
-          return reject(stderr);
+          return reject(stderr || err);
         }
         resolve(stdout);
       });
@@ -306,10 +326,32 @@ function section(title) {
 }
 
 async function main() {
-  const os = OS.LINUX;
+  let os;
+  if (process.platform === "darwin") {
+    os = OS.OSX;
+  } else if (process.platform === "linux") {
+    os = OS.LINUX;
+  } else {
+    return Promise.reject(`Error: platform ${cyan(process.platform)} is not supported`);
+  }
+
+  console.log(await runCommand(`brew ls --versions node`));
 
   if (process.platform === "darwin") {
-    // TODO: ensure homebrew is installed
+    section("OSX pre-setup");
+    console.log(`Checking if ${cyan("homebrew")} is installed (${bold("https://brew.sh")})`)
+    const brewExecutable = await runCommand("which brew", { sudo: false, shouldLog: false });
+    if (!brewExecutable) {
+      console.log("Cannot find homebrew executable. Installing homebrew");
+      await runCommand(`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`);
+    }
+
+    // Set up cask-fonts tap - required for fira-code font to be installed
+    const BREW_FONTS_TAP_NAME = "homebrew/cask-fonts";
+    const availableBrewTaps = await runCommand("brew tap", {shouldLog: false, sudo: false});
+    if (!availableBrewTaps.includes(BREW_FONTS_TAP_NAME)) {
+      await runCommand(`brew tap ${BREW_FONTS_TAP_NAME}`);
+    }
   }
 
   section("Installing required packages");
