@@ -11,7 +11,7 @@ if [[ "$(uname 2> /dev/null)" = "Darwin" ]]; then
     export GOPATH="$HOME/Documents/Code/goworkspace"
 
     ## Java
-    export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
+    # export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
 
     export TEX_PATH="/Library/TeX/texbin"
     export STACK_GHC_BIN_PATH="$HOME/.stack/snapshots/x86_64-osx/lts-8.13/8.0.2/bin:$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin"
