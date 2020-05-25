@@ -32,7 +32,6 @@ const PACKAGE_MANAGER = {
           // if this command returns with an error, package was not found
           return true;
         })
-      
     }
   }),
   BREW_CASK: (packageName) => ({
@@ -46,7 +45,6 @@ const PACKAGE_MANAGER = {
           // if this command returns with an error, package was not found
           return true;
         })
-      
     }
   }),
   NPM: (packageName) => ({
@@ -149,9 +147,30 @@ const REQUIRED_PACKAGES = [
       [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("font-fira-code")
     }
   },
-  // TODO: install trash
-  // TODO: install spectacle
-  // TODO: install vscode
+  {
+    name: "trash",
+    url: "https://hasseg.org/trash",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("trash")
+    }
+  },
+  {
+    name: "spectacle",
+    url: "https://www.spectacleapp.com",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("spectacle")
+    }
+  },
+  {
+    name: "VS Code",
+    url: "https://code.visualstudio.com",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("visual-studio-code")
+    }
+  },
 ];
 
 const HOME_DIR = require("os").homedir();
@@ -364,7 +383,7 @@ async function main() {
     });
     // Set up cask-fonts tap - required for fira-code font to be installed
     const BREW_FONTS_TAP_NAME = "homebrew/cask-fonts";
-    const availableBrewTaps = await runCommand("brew tap", {shouldLog: false, sudo: false});
+    const availableBrewTaps = await runCommand("brew tap", { shouldLog: false, sudo: false });
     if (!availableBrewTaps.includes(BREW_FONTS_TAP_NAME)) {
       await runCommand(`brew tap ${BREW_FONTS_TAP_NAME}`);
     }
