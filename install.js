@@ -77,7 +77,7 @@ const PACKAGE_MANAGER = {
 const REQUIRED_PACKAGES = [
   {
     name: "zsh",
-    url: "https://www.zsh.org",
+    url: "https://zsh.org",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.APT("zsh"),
       [OS.OSX]: PACKAGE_MANAGER.BREW("zsh")
@@ -125,7 +125,7 @@ const REQUIRED_PACKAGES = [
   },
   {
     name: "osx coreutils",
-    url: "https://www.gnu.org/software/coreutils",
+    url: "https://gnu.org/software/coreutils",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.SKIP,
       [OS.OSX]: PACKAGE_MANAGER.BREW("coreutils"),
@@ -157,7 +157,7 @@ const REQUIRED_PACKAGES = [
   },
   {
     name: "spectacle",
-    url: "https://www.spectacleapp.com",
+    url: "https://spectacleapp.com",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.SKIP,
       [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("spectacle")
@@ -173,10 +173,34 @@ const REQUIRED_PACKAGES = [
   },
   {
     name: "licecap",
-    url: "https://www.cockos.com/licecap",
+    url: "https://cockos.com/licecap",
     install: {
       [OS.LINUX]: PACKAGE_MANAGER.SKIP,
       [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("licecap")
+    }
+  },
+  {
+    name: "Karabiner Elements",
+    url: "https://pqrs.org/osx/karabiner",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("karabiner-elements"),
+    }
+  },
+  {
+    name: "exa",
+    url: "https://github.com/ogham/exa",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("exa"),
+    }
+  },
+  {
+    name: "delta",
+    url: "https://github.com/dandavison/delta",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("git-delta"),
     }
   },
 ];
@@ -347,6 +371,7 @@ function createSymlinksForDotfiles() {
   createSymlinkSync(path.resolve(".zshrc"), path.join(HOME_DIR, ".zshrc"));
   createSymlinkSync(path.resolve(".emacs"), path.join(HOME_DIR, ".emacs"));
   createSymlinkSync(path.resolve(".vimrc"), path.join(HOME_DIR, ".vimrc"));
+  createSymlinkSync(path.resolve(".gitconfig"), path.join(HOME_DIR, ".gitconfig"));
   createSymlinkSync(
     path.resolve(".tmux.conf"),
     path.join(HOME_DIR, ".tmux.conf")
@@ -357,6 +382,7 @@ function createSymlinksForDotfiles() {
     path.resolve("kitty.conf"),
     path.join(HOME_DIR, ".config", "kitty", "kitty.conf")
   );
+  createSymlinkSync(path.resolve(".alacritty.yml"), path.join(HOME_DIR, ".alacritty.yml"));
 }
 
 function section(title) {
@@ -403,6 +429,8 @@ async function main() {
       await longRunningOperation(`Installing package ${cyan(package.name)} (${bold(package.url)})`, () => {
         return package.install[os].install();
       });
+    } else if (package.install[os] === PACKAGE_MANAGER.SKIP) {
+      console.log(`Skipping package ${cyan(package.name)} (${bold(package.url)}) - not required on this platform`);
     } else {
       console.log(`Package ${cyan(package.name)} (${bold(package.url)}) is already installed`);
     }

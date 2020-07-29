@@ -6,6 +6,11 @@ if [[ "$(uname 2> /dev/null)" = "Linux" ]]; then
 fi
 
 if [[ "$(uname 2> /dev/null)" = "Darwin" ]]; then
+    ## nvm setup
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+    [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
     ## Golang
     export GOROOT="/usr/local/go"
     export GOPATH="$HOME/Documents/Code/goworkspace"
@@ -87,7 +92,11 @@ then
     alias ms="marks"
 fi
 
-if [[ -x $(which gls) ]]
+if [[ -x $(which exa) ]]
+then
+    alias ls="exa"
+    alias la="exa -la"
+elif [[ -x $(which gls) ]]
 then
     ## brew install gls
     alias ls="gls --color -hX --group-directories-first"
@@ -127,9 +136,13 @@ else
     alias h="man"
 fi
 
+
+# kubernetes
+alias "k"="kubectl"
+
 # git
 alias "gh"="git log --oneline --graph --decorate --all"
-alias "gd"="git diff | cat" # if bat is installed, it makes the diffs easier to read
+alias "gd"="git diff"
 
 ## killallmatching - kills all running processes that contain a string that's passed in as a first parameter.
 ## For example, run `killallmatching node` to kill all of the processes that contain `node` in their name.
