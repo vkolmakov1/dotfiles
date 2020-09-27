@@ -391,23 +391,19 @@ function section(title) {
 
 async function longRunningOperation(message, operation) {
   process.stdout.write(`${message}...`);
-  await operation();
-  process.stdout.write(green("OK\n"));
+  try {
+    await operation();
+    process.stdout.write(green("OK\n"));
+  } catch(err) {
+    process.stdout.write(red("ERROR\n"))
+    return Promise.reject(err);
+  }
 
   return Promise.resolve();
 }
 
-async function main() {
-  let os;
-  if (process.platform === "darwin") {
-    os = OS.OSX;
-  } else if (process.platform === "linux") {
-    os = OS.LINUX;
-  } else {
-    return Promise.reject(`Error: platform ${cyan(process.platform)} is not supported`);
-  }
-  if (process.platform === "darwin") {
-    section("OSX pre-setup");
+const preSetup = {
+  [OS.OSX]: async () => {
     await longRunningOperation(`Checking if ${cyan("homebrew")} is installed (${bold("https://brew.sh")})`, async () => {
       const brewExecutable = await runCommand("which brew", { sudo: false, shouldLog: false });
       if (!brewExecutable) {
@@ -421,7 +417,22 @@ async function main() {
     if (!availableBrewTaps.includes(BREW_FONTS_TAP_NAME)) {
       await runCommand(`brew tap ${BREW_FONTS_TAP_NAME}`);
     }
+  },
+  [OS.LINUX]: () => Promise.resolve()
+}
+
+async function main() {
+  let os;
+  if (process.platform === "darwin") {
+    os = OS.OSX;
+  } else if (process.platform === "linux") {
+    os = OS.LINUX;
+  } else {
+    return Promise.reject(`Error: platform ${cyan(process.platform)} is not supported`);
   }
+
+  section("Pre-setup");
+  await preSetup[os]();
 
   section("Installing required packages");
   for (let package of REQUIRED_PACKAGES) {
