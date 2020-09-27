@@ -32,6 +32,10 @@ let g:user_emmet_settings = {
     \  },
   \}
 
+Plug 'tpope/vim-surround'
+
+Plug 'tpope/vim-commentary'
+
 call plug#end()
 
 " You want Vim, not vi. When Vim finds a vimrc, 'nocompatible' is set anyway.

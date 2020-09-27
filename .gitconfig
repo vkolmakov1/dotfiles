@@ -6,3 +6,6 @@
 
 [interactive]
     diffFilter = delta --color-only
+[user]
+	name = vkolmakov
+	email = vkolmakov256@gmail.com

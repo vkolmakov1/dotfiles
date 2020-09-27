@@ -12,8 +12,13 @@ if [[ "$(uname 2> /dev/null)" = "Darwin" ]]; then
     [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
     ## Golang
-    export GOROOT="/usr/local/go"
-    export GOPATH="$HOME/Documents/Code/goworkspace"
+    if [ ! -d "$HOME/go" ]
+    then
+        mkdir -p $HOME/go/{bin,src,pkg}
+    fi
+    export GOPATH="$HOME/go"
+    export GOROOT="$(brew --prefix golang)/libexec"
+    export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
 
     ## Java
     # export JAVA_HOME=`/usr/libexec/java_home -v 1.8.0_222`
@@ -158,3 +163,6 @@ then
     # Not in tmux - start a session / attach to an existing session
     tm
 fi
+
+# opens GitKraken in the current directory
+alias kraken="open -na 'GitKraken' --args -p $(pwd)"
