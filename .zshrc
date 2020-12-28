@@ -141,6 +141,12 @@ else
     alias h="man"
 fi
 
+# https://github.com/sharkdp/fd
+if [[ -x $(which fd) ]]
+then
+    alias find="fd"
+fi
+
 
 # kubernetes
 alias "k"="kubectl"
@@ -157,12 +163,3 @@ function killallmatching () {
 
 # tmux shortcut -- always attach to the same session called `main`
 alias tm="tmux new-session -A -s main"
-
-if [[ -z "$TMUX" ]]
-then
-    # Not in tmux - start a session / attach to an existing session
-    tm
-fi
-
-# opens GitKraken in the current directory
-alias kraken="open -na 'GitKraken' --args -p $(pwd)"

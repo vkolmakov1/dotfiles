@@ -23,6 +23,9 @@ let g:airline_powerline_fonts = 1
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
+" Quick file search
+Plug 'ctrlpvim/ctrlp.vim'
+
 " emmet (HTML)
 Plug 'mattn/emmet-vim'
 let g:user_emmet_leader_key='<Tab>'
@@ -32,6 +35,11 @@ let g:user_emmet_settings = {
     \  },
   \}
 
+" rust
+Plug 'rust-lang/rust.vim'
+
+" surround plugin for changing quotes and other things
+" c-s ' " will change single quotes to double quotes
 Plug 'tpope/vim-surround'
 
 Plug 'tpope/vim-commentary'
@@ -90,5 +98,5 @@ set belloff=all
 colorscheme apprentice
 
 " Keybindings
-" open file
-nnoremap <F2> :Files<CR>
+" search files
+nnoremap <F1> :CtrlP<CR>

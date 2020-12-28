@@ -36,10 +36,10 @@ const PACKAGE_MANAGER = {
   }),
   BREW_CASK: (packageName) => ({
     install() {
-      return runCommand(`brew cask install ${packageName}`, { shouldLog: false, sudo: false });
+      return runCommand(`brew install --cask ${packageName}`, { shouldLog: false, sudo: false });
     },
     shouldInstall() {
-      return runCommand(`brew cask ls --versions ${packageName}`, { shouldLog: false, sudo: false })
+      return runCommand(`brew ls --cask --versions ${packageName}`, { shouldLog: false, sudo: false })
         .then(output => !output) // if command succeeds and something is returned, it's already installed
         .catch(_err => {
           // if this command returns with an error, package was not found
@@ -132,14 +132,6 @@ const REQUIRED_PACKAGES = [
     }
   },
   {
-    name: "kitty terminal",
-    url: "https://github.com/kovidgoyal/kitty",
-    install: {
-      [OS.LINUX]: PACKAGE_MANAGER.APT("kitty"),
-      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("kitty")
-    }
-  },
-  {
     name: "Fira Code font",
     url: "https://github.com/tonsky/FiraCode",
     install: {
@@ -203,6 +195,31 @@ const REQUIRED_PACKAGES = [
       [OS.OSX]: PACKAGE_MANAGER.BREW("git-delta"),
     }
   },
+  {
+    name: "fd",
+    url: "https://github.com/sharkdp/fd",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("fd"),
+    }
+  },
+  {
+    name: "gitui",
+    url: "https://github.com/extrawurst/gitui",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW("gitui"),
+    }
+  },
+  {
+    name: "alacritty",
+    url: "https://github.com/alacritty/alacritty",
+    install: {
+      [OS.LINUX]: PACKAGE_MANAGER.SKIP,
+      [OS.OSX]: PACKAGE_MANAGER.BREW_CASK("alacritty"),
+    }
+
+  }
 ];
 
 const HOME_DIR = require("os").homedir();
