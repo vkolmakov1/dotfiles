@@ -19,5 +19,15 @@
   "homepage": "https://github.com/vkolmakov/dotfiles#readme",
   "dependencies": {
     "sudo-prompt": "^9.2.1"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "useTabs": true,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "es5"
   }
 }
