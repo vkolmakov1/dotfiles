@@ -1,11 +1,12 @@
 [core]
-    pager = delta
+	pager = delta
 
 [delta]
-    line-numbers = true
+	line-numbers = true
 
 [interactive]
-    diffFilter = delta --color-only
+	diffFilter = delta --color-only
+
 [user]
-	name = vkolmakov
-	email = vkolmakov256@gmail.com
+	name = Vladimir Kolmakov
+

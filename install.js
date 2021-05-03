@@ -5,10 +5,13 @@ const path = require("path");
 const https = require("https");
 const { exec } = require("child_process");
 const sudo = require("sudo-prompt");
+const { EOL } = require("os");
+const readline = require("readline");
 
 const OS = {
 	OSX: "OSX",
 	LINUX: "LINUX",
+	WINDOWS: "WINDOWS",
 };
 
 const PACKAGE_MANAGER = {
@@ -90,12 +93,15 @@ const PACKAGE_MANAGER = {
 	}),
 	SCOOP: (packageName) => ({
 		install() {
-			return runCommand(`scoop install ${packageName}`, {
+			return runCommand(`powershell -command "scoop install ${packageName}"`, {
 				shouldLog: false,
 				sudo: false,
 			});
 		},
-		shouldInstall() {},
+		shouldInstall() {
+			// no harm in rerunning the install command here
+			return Promise.resolve(true);
+		},
 	}),
 	SKIP: {
 		install() {
@@ -114,6 +120,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("zsh"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW("zsh"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -122,6 +129,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("tmux"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW("tmux"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -130,6 +138,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("vim"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW("vim"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("vim"),
 		},
 	},
 	{
@@ -138,6 +147,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.NPM("tldr"),
 			[OS.OSX]: PACKAGE_MANAGER.NPM("tldr"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -146,6 +156,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("bat"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW("bat"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -154,6 +165,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("ripgrep"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW("ripgrep"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -162,6 +174,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("coreutils"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -170,6 +183,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.APT("fonts-firacode"),
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("font-fira-code"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("firacode"),
 		},
 	},
 	{
@@ -178,6 +192,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("trash"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -186,6 +201,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("spectacle"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -194,6 +210,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("visual-studio-code"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("vscode"),
 		},
 	},
 	{
@@ -202,6 +219,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("licecap"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -210,6 +228,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("karabiner-elements"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -218,6 +237,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("exa"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
 		},
 	},
 	{
@@ -226,6 +246,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("git-delta"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("delta"),
 		},
 	},
 	{
@@ -234,6 +255,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("fd"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("fd"),
 		},
 	},
 	{
@@ -242,6 +264,7 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW("gitui"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("gitui"),
 		},
 	},
 	{
@@ -250,6 +273,52 @@ const REQUIRED_PACKAGES = [
 		install: {
 			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
 			[OS.OSX]: PACKAGE_MANAGER.BREW_CASK("alacritty"),
+			[OS.WINDOWS]: PACKAGE_MANAGER.SKIP,
+		},
+	},
+	{
+		name: "insomnia",
+		url: "https://github.com/Kong/insomnia",
+		install: {
+			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
+			[OS.OSX]: PACKAGE_MANAGER.SKIP,
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("insomnia"),
+		},
+	},
+	{
+		name: "nuget",
+		url: "https://www.nuget.org/",
+		install: {
+			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
+			[OS.OSX]: PACKAGE_MANAGER.SKIP,
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("nuget"),
+		},
+	},
+	{
+		name: "nvm",
+		url: "https://github.com/nvm-sh/nvm",
+		install: {
+			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
+			[OS.OSX]: PACKAGE_MANAGER.SKIP,
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("nvm"),
+		},
+	},
+	{
+		name: "gsudo",
+		url: "https://github.com/gerardog/gsudo",
+		install: {
+			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
+			[OS.OSX]: PACKAGE_MANAGER.SKIP,
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("gsudo"),
+		},
+	},
+	{
+		name: "sharex",
+		url: "https://getsharex.com/",
+		install: {
+			[OS.LINUX]: PACKAGE_MANAGER.SKIP,
+			[OS.OSX]: PACKAGE_MANAGER.SKIP,
+			[OS.WINDOWS]: PACKAGE_MANAGER.SCOOP("sharex"),
 		},
 	},
 ];
@@ -359,7 +428,7 @@ function createSymlinkSync(from, to) {
 	ensureDirectorySync(targetDirectoryName);
 
 	console.log(`Creating a symlink ${cyan(to)} -> ${cyan(from)}`);
-	fs.symlinkSync(from, to);
+	return fs.symlinkSync(from, to);
 }
 
 function httpGetToFile(url, destinationFilePath) {
@@ -420,14 +489,23 @@ function copyFile(src, dest) {
 	});
 }
 
-function createSymlinksForDotfiles() {
+async function createSymlinksForDotfiles(os) {
 	createSymlinkSync(path.resolve(".zshrc"), path.join(HOME_DIR, ".zshrc"));
 	createSymlinkSync(path.resolve(".emacs"), path.join(HOME_DIR, ".emacs"));
 	createSymlinkSync(path.resolve(".vimrc"), path.join(HOME_DIR, ".vimrc"));
+	createSymlinkSync(path.resolve(".vimrc"), path.join(HOME_DIR, ".gvimrc"));
 	createSymlinkSync(
+		path.resolve(".ideavimrc"),
+		path.join(HOME_DIR, ".ideavimrc")
+	);
+
+	// Copying gitconfig instead of symlinking it to make sure that we can set
+	// a different email address on different machines
+	copyFile(
 		path.resolve(".gitconfig"),
 		path.join(HOME_DIR, ".gitconfig")
 	);
+
 	createSymlinkSync(
 		path.resolve(".tmux.conf"),
 		path.join(HOME_DIR, ".tmux.conf")
@@ -442,6 +520,34 @@ function createSymlinksForDotfiles() {
 		path.resolve(".alacritty.yml"),
 		path.join(HOME_DIR, ".alacritty.yml")
 	);
+	if (os === OS.WINDOWS) {
+		const profileLocationStdout = await runCommand(
+			`powershell -command "echo $Profile"`,
+			{
+				sudo: false,
+				shouldLog: false,
+			}
+		);
+
+		createSymlinkSync(
+			path.resolve("Microsoft.Powershell_profile.ps1"),
+			path.resolve(profileLocationStdout.trim())
+		);
+	}
+}
+
+function getInput(question) {
+	const interface = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
+
+	return new Promise((resolve) => {
+		interface.question(`${bold(question)} > `, (response) => {
+			interface.close();
+			resolve(response);
+		});
+	});
 }
 
 function section(title) {
@@ -491,6 +597,56 @@ const preSetup = {
 		}
 	},
 	[OS.LINUX]: () => Promise.resolve(),
+	[OS.WINDOWS]: async () => {
+		// Make sure that admin powershell is running
+		console.log("Making sure that the script is running with an admin user (elevated permissions are required to create symlinks on Windows)");
+		const adminRoleCheckStdout = await runCommand(
+			`powershell -command "(New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"`,
+			{ sudo: false, shouldLog: false },
+		);
+		const hasAdminPermissions = adminRoleCheckStdout.trim().toLowerCase().includes('true')
+		if (!hasAdminPermissions) {
+			console.error("This script requires admin permissions on Windows. Start an admin powershell session and try again.");
+			process.exit(1);
+		}
+		
+		// install scoop
+		await longRunningOperation(
+			`Checking if ${cyan("scoop")} is installed (${bold(
+				"https://scoop.sh/"
+			)})`,
+			async () => {
+				try {
+					await runCommand(`powershell -command "Get-Command scoop"`, {
+						sudo: false,
+						shouldLog: false,
+					});
+				} catch (err) {
+					console.log("Cannot find scoop executable. Installing scoop");
+					await runCommand(
+						`powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser"`
+					);
+					await runCommand(
+						`powershell -command "iwr -useb get.scoop.sh | iex"`
+					);
+				}
+			}
+		);
+		console.log("Checking if all of the required scoop buckets are added");
+		/** @type {string} */
+		const bucketsListStdout = await runCommand(
+			`powershell -command "scoop bucket list"`,
+			{ sudo: false, shouldLog: false }
+		);
+		const requiredBuckets = ["extras", "nerd-fonts", "versions"];
+		const existingBuckets = bucketsListStdout.split(EOL);
+		for (const bucket of requiredBuckets) {
+			if (!existingBuckets.includes(bucket)) {
+				console.log(`Adding ${bucket} scoop bucket`);
+				await runCommand(`powershell -command "scoop bucket add ${bucket}"`);
+			}
+		}
+	},
 };
 
 async function main() {
@@ -499,11 +655,17 @@ async function main() {
 		os = OS.OSX;
 	} else if (process.platform === "linux") {
 		os = OS.LINUX;
+	} else if (process.platform === "win32") {
+		os = OS.WINDOWS;
 	} else {
 		return Promise.reject(
 			`Error: platform ${cyan(process.platform)} is not supported`
 		);
 	}
+
+	const emailAddress = await getInput(
+		"Enter your email address (will be used to configure git)"
+	);
 
 	section("Pre-setup");
 	await preSetup[os]();
@@ -541,22 +703,41 @@ async function main() {
 	}
 
 	section("Creating symlinks for the dotfiles");
-	createSymlinksForDotfiles();
+	await createSymlinksForDotfiles(os);
 
-	section("Installing plug.vim");
-	await httpGetToFile(
-		"https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim",
-		path.join(HOME_DIR, ".vim", "autoload", "plug.vim")
-	);
+	section("Setting up git email address");
+	runCommand(`git config --global user.email "${emailAddress}"`);
 
-	section("Installing vim color theme");
-	await copyFile(
-		path.resolve(".", "Apprentice", "colors", "apprentice.vim"),
-		path.join(HOME_DIR, ".vim", "colors", "apprentice.vim")
-	);
+	if (os === OS.WINDOWS) {
+		section("Installing plug.vim");
+		await httpGetToFile(
+			"https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim",
+			path.join(HOME_DIR, "vimfiles", "autoload", "plug.vim")
+		);
+		section("Installing vim color theme");
+		await copyFile(
+			path.resolve(".", "Apprentice", "colors", "apprentice.vim"),
+			path.join(HOME_DIR, "vimfiles", "colors", "apprentice.vim")
+		);
 
-	section("Installing vim plugins");
-	await runCommand("vim +PlugInstall +qall > /dev/null");
+		section("Installing vim plugins");
+		await runCommand(`powershell -command "vim +PlugInstall +qall"`);
+	} else {
+		section("Installing plug.vim");
+		await httpGetToFile(
+			"https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim",
+			path.join(HOME_DIR, ".vim", "autoload", "plug.vim")
+		);
+		section("Installing vim color theme");
+		await copyFile(
+			path.resolve(".", "Apprentice", "colors", "apprentice.vim"),
+			path.join(HOME_DIR, ".vim", "colors", "apprentice.vim")
+		);
+
+		section("Installing vim plugins");
+		await runCommand("vim +PlugInstall +qall > /dev/null");
+	}
+
 	// TODO: fixme
 	// section("Changing default shell to zsh");
 	// const zshPath = await runCommand("which zsh", { sudo: false, shouldLog: false });

@@ -1,5 +1,4 @@
 call plug#begin('~/.vim/plugged')
-
 " JavaScript
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
@@ -100,3 +99,11 @@ colorscheme apprentice
 " Keybindings
 " search files
 nnoremap <F1> :CtrlP<CR>
+
+set guifont=Fira_Code:h18
+set guioptions-=m  "remove menu bar
+set guioptions-=T  "remove toolbar
+set guioptions-=r  "remove right-hand scroll bar
+set guioptions-=L  "remove left-hand scroll bar
+set renderoptions=type:directx
+set encoding=utf-8
