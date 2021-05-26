@@ -11,26 +11,67 @@ Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 ## General
 Set-Alias open Explorer.exe
 Set-Alias which Get-Command
-Set-Alias l Get-ChildItemColor -Option AllScope
-Set-Alias ls Get-ChildItemColorFormatWide -Option AllScope
+if (Get-Command Get-ChildItemColor -ErrorAction SilentlyContinue) {
+  Set-Alias l Get-ChildItemColor -Option AllScope
+}
+if (Get-Command Get-ChildItemColorFormatWide -ErrorAction SilentlyContinue) {
+  Set-Alias ls Get-ChildItemColorFormatWide -Option AllScope
+}
+
+function Create-Mark {
+  param(
+    [Parameter(Mandatory = $True)]
+    [string]$Mark
+  )
+  $MarksFilePath = Join-Path $HOME ".vkolmakov-dotfiles-marks"
+  $CurrentLocation = (Get-Location).Path.Trim()
+  $UpdatedMarksFile = New-TemporaryFile
+
+  if (-not (Test-Path $MarksFilePath)) {
+    $null = New-Item $MarksFilePath
+  }
+
+  if ($Mark -match "\s+") {
+    Write-Error "Mark name must not contain any spaces."
+    return
+  }
+
+  # In case the mark already exists, remove it and swap it with the updated value
+  $null = Get-Content $MarksFilePath | Where-Object {$_ -notmatch "^$([regex]::escape($Mark)) "} | Set-Content $UpdatedMarksFile
+  $null = Move-Item $UpdatedMarksFile $MarksFilePath -Force
+
+  $null = Add-Content $MarksFilePath "$Mark $CurrentLocation"
+
+  Write-Host "Created mark $Mark that points to $CurrentLocation"
+}
+Set-Alias cm Create-Mark
 
 function JumpTo-Mark {
   param(
     [string]
     $Mark
   )
-  # TODO: read from file
-  $Marks = @{}
-
-  if ($Marks.ContainsKey($Mark)) {
-    Push-Location $Marks[$Mark]
-  } else {
-    Write-Host "Mark '$Mark' not found"
+  $MarksFilePath = Join-Path $HOME '.vkolmakov-dotfiles-marks'
+  if (-not (Test-Path $MarksFilePath)) {
+    $null = New-Item $MarksFilePath
   }
+
+  if (-not $Mark) {
+    Write-Host 'Available marks:'
+    Write-Host ''
+    return Get-Content $MarksFilePath
+  }
+
+  foreach ($Line in Get-Content $MarksFilePath) {
+    if ($Line.StartsWith("$Mark ")) {
+      $null = Push-Location ($Line.TrimStart("$Mark "))
+      return
+    }
+  }
+
+  Write-Host "Mark '$Mark' not found"
 }
-Set-Alias j JumpTo-Mark # my script
-
-
+Set-Alias j JumpTo-Mark
 
 ## git
 function git-status { git status -sb }

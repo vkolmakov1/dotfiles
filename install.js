@@ -528,10 +528,17 @@ async function createSymlinksForDotfiles(os) {
 				shouldLog: false,
 			}
 		);
+		const powershellProfileFolder = path.dirname(path.resolve(profileLocationStdout.trim()));
 
 		createSymlinkSync(
 			path.resolve("Microsoft.Powershell_profile.ps1"),
-			path.resolve(profileLocationStdout.trim())
+			path.join(powershellProfileFolder, "Microsoft.Powershell_profile.ps1")
+		);
+
+		// VSCode powershell profile
+		createSymlinkSync(
+			path.resolve("Microsoft.Powershell_profile.ps1"),
+			path.join(powershellProfileFolder, "Microsoft.VSCode_profile.ps1")
 		);
 	}
 }

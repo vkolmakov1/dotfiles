@@ -1,3 +1,6 @@
 set clipboard+=unnamed
 set relativenumber number
+set visualbell
+set noerrorbells
+set ignorecase
 
